@@ -280,6 +280,7 @@ export default function CVSQuestionnairePage() {
               symptomsFrequencyScore={scores.symptomsFrequency}
               screenTimeAssociationScore={scores.screenTimeAssociation}
               totalScore={scores.total}
+              recommendationImageHref={undefined}
               onSubmit={handleSubmit}
               isSubmitting={isSubmitting}
             />

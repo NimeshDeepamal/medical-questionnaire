@@ -2,8 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import {
+  getRecommendationBand,
   getRiskColor,
-  getRiskLevel,
   getRiskTextColor,
 } from "@/lib/cvs-scoring";
 
@@ -14,6 +14,7 @@ interface CVSResultsProps {
   symptomsFrequencyScore: number;
   screenTimeAssociationScore: number;
   totalScore: number;
+  recommendationImageHref?: string;
   onSubmit: () => void;
   isSubmitting?: boolean;
 }
@@ -25,12 +26,13 @@ export function CVSResults({
   symptomsFrequencyScore,
   screenTimeAssociationScore,
   totalScore,
+  recommendationImageHref = "/img.jpeg",
   onSubmit,
   isSubmitting = false,
 }: CVSResultsProps) {
-  const riskLevel = getRiskLevel(totalScore);
   const colorClasses = getRiskColor(totalScore);
   const textColorClass = getRiskTextColor(totalScore);
+  const recommendationBand = getRecommendationBand(totalScore);
 
   return (
     <div className="bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden max-w-2xl mx-auto">
@@ -60,13 +62,13 @@ export function CVSResults({
               </p>
             </div>
             <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 text-center">
-              <p className="text-sm text-gray-600 mb-2">21.4 Frequency</p>
+              <p className="text-sm text-gray-600 mb-2">Frequency</p>
               <p className="text-3xl font-bold text-purple-600">
                 {symptomsFrequencyScore}
               </p>
             </div>
             <div className="bg-pink-50 border border-pink-200 rounded-lg p-4 text-center">
-              <p className="text-sm text-gray-600 mb-2">21.5 Association</p>
+              <p className="text-sm text-gray-600 mb-2">Association</p>
               <p className="text-3xl font-bold text-pink-600">
                 {screenTimeAssociationScore}
               </p>
@@ -81,66 +83,112 @@ export function CVSResults({
               <p className="text-sm font-medium text-gray-600 mb-2">
                 Total CVS Score
               </p>
-              <p className={`text-4xl font-bold ${textColorClass}`}>
+              <p className={`text-5xl font-bold ${textColorClass}`}>
                 {totalScore}
               </p>
             </div>
             <div className="text-right">
               <p className="text-sm font-medium text-gray-600 mb-2">
-                Risk Level
+                CVS-case probability status
               </p>
               <p className={`text-2xl font-bold ${textColorClass}`}>
-                {riskLevel}
+                {recommendationBand.status}
+              </p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mt-1">
+                {recommendationBand.label}
               </p>
             </div>
           </div>
         </div>
 
         {/* Recommendations */}
-        <div className="border-t pt-8">
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">
-            Recommendations
-          </h3>
-          <div className="space-y-3 text-gray-700">
-            {totalScore <= 2 && (
-              <>
-                <p>✓ Your eyes appear to be in good condition</p>
-                <p>
-                  ✓ Continue maintaining good screen habits and eye care
-                  practices
+        <div className="border-t pt-8 space-y-6">
+          <div className="rounded-xl border border-gray-200 bg-gray-50 p-5">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-800">
+                  Recommendations
+                </h3>
+                <p className="text-sm text-gray-600">
+                  {recommendationBand.label} · {recommendationBand.status}
                 </p>
-                <p>✓ Take regular breaks following the 20-20-20 rule</p>
-              </>
-            )}
-            {totalScore > 2 && totalScore <= 4 && (
-              <>
-                <p>• You may experience mild CVS symptoms</p>
-                <p>• Increase frequency of breaks during screen use</p>
-                <p>• Consider using artificial tears if experiencing dryness</p>
-                <p>• Evaluate your workstation ergonomics</p>
-              </>
-            )}
-            {totalScore > 4 && totalScore <= 6 && (
-              <>
-                <p>• You may experience moderate CVS symptoms</p>
-                <p>• Take frequent breaks (20 minutes every 1-2 hours)</p>
-                <p>• Use lubricating eye drops regularly</p>
-                <p>• Optimize lighting and reduce glare</p>
-                <p>• Consider consulting an eye care professional</p>
-              </>
-            )}
-            {totalScore > 6 && (
-              <>
-                <p>• You may experience severe CVS symptoms</p>
-                <p>
-                  • It is strongly recommended to consult an eye care
-                  professional
+              </div>
+              <div className="text-sm font-semibold text-gray-700">
+                Total score: {totalScore}
+              </div>
+            </div>
+
+            <div className="mt-4 rounded-lg border border-dashed border-gray-300 bg-white p-4">
+              <p className="text-sm font-semibold text-gray-700 mb-3">
+                Iqbal protective measures reference
+              </p>
+              {recommendationImageHref ? (
+                <a
+                  href={recommendationImageHref}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center rounded-md bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-700"
+                >
+                  Open reference image in new tab
+                </a>
+              ) : (
+                <p className="text-sm text-gray-600">
+                  Add an image URL or file path to show the protective measures
+                  reference here.
                 </p>
-                <p>• Take frequent breaks every 30 minutes</p>
-                <p>• Use prescribed eye drops and protective eyewear</p>
-                <p>• Consider modifying your screen time or work schedule</p>
-              </>
-            )}
+              )}
+            </div>
+          </div>
+
+          <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+            <div className="rounded-xl border border-gray-200 p-5">
+              <h4 className="text-base font-semibold text-gray-800 mb-4">
+                {recommendationBand.status}
+              </h4>
+              <div className="space-y-3 text-gray-700">
+                {recommendationBand.recommendations.map((item) => (
+                  <p key={item}>• {item}</p>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-xl border border-gray-200 p-5 bg-white">
+              <h4 className="text-base font-semibold text-gray-800 mb-4">
+                Score bands
+              </h4>
+              <div className="space-y-2 text-sm">
+                <p>
+                  <span className="font-semibold text-red-700">
+                    7-10 points:
+                  </span>{" "}
+                  Positive CVS-case
+                </p>
+                <p>
+                  <span className="font-semibold text-orange-700">
+                    5-6 points:
+                  </span>{" "}
+                  High probability
+                </p>
+                <p>
+                  <span className="font-semibold text-green-700">
+                    3-4 points:
+                  </span>{" "}
+                  Low probability
+                </p>
+                <p>
+                  <span className="font-semibold text-blue-700">
+                    1-2 points:
+                  </span>{" "}
+                  Not CVS-case
+                </p>
+                <p>
+                  <span className="font-semibold text-purple-700">
+                    0 points:
+                  </span>{" "}
+                  Normal subject
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 

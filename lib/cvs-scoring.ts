@@ -20,6 +20,14 @@ export interface CVSScores {
   total: number;
 }
 
+export interface RecommendationBand {
+  min: number;
+  max?: number;
+  label: string;
+  status: string;
+  recommendations: string[];
+}
+
 function calculateThreeOptionScore(
   selectedValue: string,
   firstOption: string,
@@ -102,4 +110,72 @@ export function getRiskTextColor(totalScore: number): string {
   } else {
     return "text-red-900";
   }
+}
+
+export function getRecommendationBand(totalScore: number): RecommendationBand {
+  if (totalScore <= 0) {
+    return {
+      min: 0,
+      max: 0,
+      label: "0 points",
+      status: "Normal subject",
+      recommendations: ["Follow Iqbal's instructions as prophylactic measures"],
+    };
+  }
+
+  if (totalScore <= 2) {
+    return {
+      min: 1,
+      max: 2,
+      label: "1-2 points",
+      status: "Not CVS-case",
+      recommendations: [
+        "Repeat CVS-Smart every 6 months for check-up",
+        "Follow Iqbal's instructions to improve your score to 0 points",
+      ],
+    };
+  }
+
+  if (totalScore <= 4) {
+    return {
+      min: 3,
+      max: 4,
+      label: "3-4 points",
+      status: "Low probability",
+      recommendations: [
+        "Repeat CVS-Smart every 6 months for check-up",
+        "Reduce your screen-time",
+        "Follow Iqbal's instructions",
+      ],
+    };
+  }
+
+  if (totalScore <= 6) {
+    return {
+      min: 5,
+      max: 6,
+      label: "5-6 points",
+      status: "High probability",
+      recommendations: [
+        "Consult your ophthalmologist or optometrist to confirm or exclude CVS diagnosis",
+        "In case you are diagnosed as a positive CVS-case, please receive the appropriate treatment",
+        "If you are diagnosed as a negative CVS-case, please repeat CVS-Smart every 6 months for check-up",
+        "Reduce your screen-time",
+        "Follow Iqbal's instructions",
+      ],
+    };
+  }
+
+  return {
+    min: 7,
+    max: 10,
+    label: "7-10 points",
+    status: "Positive CVS-case (CVS diagnosis is confirmed)",
+    recommendations: [
+      "Consult your ophthalmologist or optometrist to receive the appropriate treatment",
+      "Reduce your screen-time",
+      "Follow Iqbal's instructions",
+      "If you already have a chronic eye disease or pathology, or previous eye surgery, this diagnosis might be inaccurate in your condition",
+    ],
+  };
 }

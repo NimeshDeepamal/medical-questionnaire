@@ -223,7 +223,7 @@ export function CVSSectionB({ data, onChange }: SectionBProps) {
                 className="w-5 h-5 cursor-pointer accent-purple-600"
               />
               <label htmlFor="breaks-frequently" className="text-gray-700 cursor-pointer text-base">
-                Yes frequently
+                Frequently
               </label>
             </div>
             <div className="flex items-center space-x-3">
