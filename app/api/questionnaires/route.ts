@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+import { getDb } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
@@ -110,6 +110,7 @@ export async function POST(request: NextRequest) {
       true,
     ];
 
+    const db = getDb();
     const insertedData = await db.query(insertQuery, insertValues);
 
     return NextResponse.json(
@@ -131,6 +132,7 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
+    const db = getDb();
     const result = await db.query(
       "select * from questionnaires order by created_at desc",
     );
@@ -156,6 +158,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
+    const db = getDb();
     const deleted = await db.query(
       "delete from questionnaires where id = $1 returning id",
       [id],
