@@ -22,15 +22,14 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## Supabase Setup
+## Database (Neon/Postgres) Setup
 
-This project already includes Supabase clients and an API route at `/api/questionnaires`.
+This project uses a Postgres database (Neon is recommended). The app reads the connection string from the `DATABASE_URL` environment variable.
 
-1. Create a Supabase project and copy the project URL and anon/publishable key into `.env.local`.
-2. Run the SQL in [supabase/schema.sql](supabase/schema.sql) in the Supabase SQL editor.
-3. Make sure the `questionnaires` table exists before submitting the form or loading the admin dashboard.
-
-The schema enables row-level security and adds public insert/read policies so the current API route can save and fetch questionnaire rows.
+1. Create a Neon Postgres database and copy the connection string (it will look like `postgresql://user:pass@host/dbname?sslmode=require`).
+2. Add that connection string to your local `.env.local` as `DATABASE_URL` and add the same value to your Vercel project env vars.
+3. Run the SQL in [supabase/schema.sql](supabase/schema.sql) (it's plain Postgres SQL) against your Neon database to create the `questionnaires` table.
+4. Ensure the `questionnaires` table exists before submitting the form or loading the admin dashboard.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
