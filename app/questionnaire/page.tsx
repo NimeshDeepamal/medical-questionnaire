@@ -149,11 +149,20 @@ export default function CVSQuestionnairePage() {
     };
 
     const fields = requiredFields[section] || [];
-
-    return fields.every((field) => {
+    const allFieldsValid = fields.every((field) => {
       const value = formData[field as keyof typeof formData];
       return Array.isArray(value) ? value.length > 0 : value !== "";
     });
+
+    if (
+      section === "b" &&
+      formData.regular_breaks === "Yes frequently" &&
+      !formData.breaks_frequency
+    ) {
+      return false;
+    }
+
+    return allFieldsValid;
   };
 
   const visualScore = calculateSectionScore(formData.visual_symptoms);

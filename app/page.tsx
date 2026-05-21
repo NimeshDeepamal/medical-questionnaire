@@ -149,6 +149,14 @@ export default function Home() {
       return false;
     }
 
+    if (
+      section === "b" &&
+      formData.regular_breaks === "Yes frequently" &&
+      !formData.breaks_frequency
+    ) {
+      return false;
+    }
+
     // Check conditional requirement: if changed_study_habits is "Yes", all sub-questions must be filled
     if (section === "e" && formData.changed_study_habits === "Yes") {
       const habitFields = [
@@ -491,7 +499,7 @@ export default function Home() {
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-6">
               <div className="border-b pb-4">
                 <h3 className="text-lg font-semibold text-gray-900">
-                  21.4 Symptom Frequency
+                  21.4 Symptom Frequency <span className="text-red-500">*</span>
                 </h3>
                 <p className="text-gray-600 text-sm mt-1">
                   If yes, Frequency of those above mentioned symptoms in
@@ -562,7 +570,8 @@ export default function Home() {
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-6">
               <div className="border-b pb-4">
                 <h3 className="text-lg font-semibold text-gray-900">
-                  21.5 Screen Time Association
+                  21.5 Screen Time Association{" "}
+                  <span className="text-red-500">*</span>
                 </h3>
                 <p className="text-gray-600 text-sm mt-1">
                   Are these symptoms associated with the time of your screen
@@ -697,10 +706,7 @@ export default function Home() {
               isSubmitting={isSubmitting}
             />
             <div className="text-center">
-              <Button
-                onClick={() => setCurrentSection("e")}
-                variant="outline"
-              >
+              <Button onClick={() => setCurrentSection("e")} variant="outline">
                 Back to Edit
               </Button>
             </div>
