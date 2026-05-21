@@ -15,19 +15,56 @@ export interface CVSScores {
   visualSymptoms: number;
   ocularSurface: number;
   extraOcular: number;
+  symptomsFrequency: number;
+  screenTimeAssociation: number;
   total: number;
+}
+
+function calculateThreeOptionScore(
+  selectedValue: string,
+  firstOption: string,
+  secondOption: string,
+  thirdOption: string,
+): number {
+  if (selectedValue === firstOption) return 0;
+  if (selectedValue === secondOption) return 1;
+  if (selectedValue === thirdOption) return 3;
+  return 0;
+}
+
+export function calculateSymptomsFrequencyScore(value: string): number {
+  return calculateThreeOptionScore(value, "Rare", "Infrequent", "Frequent");
+}
+
+export function calculateScreenTimeAssociationScore(value: string): number {
+  return calculateThreeOptionScore(value, "Never", "Sometimes", "Always");
 }
 
 export function calculateTotalScore(
   visualScore: number,
   ocularScore: number,
-  extraOcularScore: number
+  extraOcularScore: number,
+  symptomsFrequency: string = "",
+  screenTimeAssociation: string = "",
 ): CVSScores {
+  const symptomsFrequencyScore =
+    calculateSymptomsFrequencyScore(symptomsFrequency);
+  const screenTimeAssociationScore = calculateScreenTimeAssociationScore(
+    screenTimeAssociation,
+  );
+
   return {
     visualSymptoms: visualScore,
     ocularSurface: ocularScore,
     extraOcular: extraOcularScore,
-    total: visualScore + ocularScore + extraOcularScore,
+    symptomsFrequency: symptomsFrequencyScore,
+    screenTimeAssociation: screenTimeAssociationScore,
+    total:
+      visualScore +
+      ocularScore +
+      extraOcularScore +
+      symptomsFrequencyScore +
+      screenTimeAssociationScore,
   };
 }
 

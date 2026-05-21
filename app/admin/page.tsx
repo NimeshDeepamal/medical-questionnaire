@@ -45,19 +45,51 @@ export default function AdminDashboard() {
   useEffect(() => {
     filterSubmissions();
   }, [submissions, searchTerm, riskFilter]);
-
-  const fetchSubmissions = async () => {
-    try {
-      setIsLoading(true);
-      const response = await fetch('/api/questionnaires');
-      if (!response.ok) throw new Error('Failed to fetch');
-      const data = await response.json();
-      setSubmissions(data.data || []);
-      setError(null);
-    } catch (err) {
-      setError('Failed to load submissions');
-      console.error(err);
-    } finally {
+      interface Questionnaire {
+        id: string;
+        created_at: string;
+        age: string;
+        gender: string;
+        faculty_of_study: string;
+        digital_devices: string[];
+        digital_devices_other: string | null;
+        consecutive_hours: string | null;
+        screen_viewing_distance: string | null;
+        regular_breaks: string | null;
+        breaks_frequency: string | null;
+        eye_strain_reduction: string[];
+        lighting_conditions: string | null;
+        screen_position: string | null;
+        sitting_posture: string | null;
+        chair_support: string | null;
+        neck_bending_frequency: string | null;
+        device_holding_position: string | null;
+        visual_symptoms: string[];
+        visual_symptoms_score: number;
+        ocular_surface_symptoms: string[];
+        ocular_surface_score: number;
+        extra_ocular_symptoms: string[];
+        extra_ocular_score: number;
+        symptoms_frequency: string | null;
+        associated_with_screen_use: string | null;
+        eye_conditions: string[];
+        corrective_lenses: string | null;
+        device_use_before_sleep: string | null;
+        sleep_hours: string | null;
+        eye_drops_usage: string | null;
+        eye_drops_frequency: string | null;
+        productivity_impact: string | null;
+        consulted_eye_care: string | null;
+        changed_study_habits: string | null;
+        study_habit_changes_description: string | null;
+        study_habit_changes_list: string[];
+        study_habit_frequency: string | null;
+        study_habit_association: string | null;
+        study_habit_apply_frequency: string | null;
+        study_habit_help_level: string | null;
+        total_score: number;
+        submit_confirmation: boolean;
+      }
       setIsLoading(false);
     }
   };

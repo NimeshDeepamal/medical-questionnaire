@@ -22,6 +22,16 @@ pnpm dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Supabase Setup
+
+This project already includes Supabase clients and an API route at `/api/questionnaires`.
+
+1. Create a Supabase project and copy the project URL and anon/publishable key into `.env.local`.
+2. Run the SQL in [supabase/schema.sql](supabase/schema.sql) in the Supabase SQL editor.
+3. Make sure the `questionnaires` table exists before submitting the form or loading the admin dashboard.
+
+The schema enables row-level security and adds public insert/read policies so the current API route can save and fetch questionnaire rows.
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 ## Learn More
