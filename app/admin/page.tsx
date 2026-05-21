@@ -3,6 +3,8 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
+  calculateScreenTimeAssociationScore,
+  calculateSymptomsFrequencyScore,
   getRiskColor,
   getRiskLevel,
   getRiskTextColor,
@@ -10,6 +12,19 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Legend,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import * as XLSX from "xlsx";
 
 interface Questionnaire {
@@ -193,6 +208,101 @@ export default function AdminDashboard() {
       },
     };
   }, [submissions]);
+
+  const chartData = useMemo(() => {
+    const riskDistribution = [
+      {
+        name: "No CVS Symptoms",
+        value: filteredSubmissions.filter(
+          (s) => getRiskLevel(s.total_score) === "No CVS Symptoms",
+        ).length,
+      },
+      {
+        name: "Mild CVS",
+        value: filteredSubmissions.filter(
+          (s) => getRiskLevel(s.total_score) === "Mild CVS",
+        ).length,
+      },
+      {
+        name: "Moderate CVS",
+        value: filteredSubmissions.filter(
+          (s) => getRiskLevel(s.total_score) === "Moderate CVS",
+        ).length,
+      },
+      {
+        name: "Severe CVS",
+        value: filteredSubmissions.filter(
+          (s) => getRiskLevel(s.total_score) === "Severe CVS",
+        ).length,
+      },
+    ].filter((item) => item.value > 0);
+
+    const sectionAverages =
+      filteredSubmissions.length === 0
+        ? []
+        : [
+            {
+              name: "Visual",
+              value:
+                filteredSubmissions.reduce(
+                  (sum, sub) => sum + sub.visual_symptoms_score,
+                  0,
+                ) / filteredSubmissions.length,
+            },
+            {
+              name: "Ocular",
+              value:
+                filteredSubmissions.reduce(
+                  (sum, sub) => sum + sub.ocular_surface_score,
+                  0,
+                ) / filteredSubmissions.length,
+            },
+            {
+              name: "Extra-Ocular",
+              value:
+                filteredSubmissions.reduce(
+                  (sum, sub) => sum + sub.extra_ocular_score,
+                  0,
+                ) / filteredSubmissions.length,
+            },
+            {
+              name: "21.4",
+              value:
+                filteredSubmissions.reduce(
+                  (sum, sub) =>
+                    sum +
+                    calculateSymptomsFrequencyScore(
+                      sub.symptoms_frequency ?? "",
+                    ),
+                  0,
+                ) / filteredSubmissions.length,
+            },
+            {
+              name: "21.5",
+              value:
+                filteredSubmissions.reduce(
+                  (sum, sub) =>
+                    sum +
+                    calculateScreenTimeAssociationScore(
+                      sub.associated_with_screen_use ?? "",
+                    ),
+                  0,
+                ) / filteredSubmissions.length,
+            },
+            {
+              name: "Total",
+              value:
+                filteredSubmissions.reduce(
+                  (sum, sub) => sum + sub.total_score,
+                  0,
+                ) / filteredSubmissions.length,
+            },
+          ];
+
+    return { riskDistribution, sectionAverages };
+  }, [filteredSubmissions]);
+
+  const pieColors = ["#16a34a", "#eab308", "#f97316", "#ef4444"];
 
   const handleLogout = () => {
     sessionStorage.removeItem("adminAuthenticated");
@@ -382,6 +492,78 @@ export default function AdminDashboard() {
           </div>
         )}
 
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          <div className="bg-white rounded-lg shadow p-6 border border-gray-200">
+            <div className="mb-4">
+              <h2 className="text-xl font-semibold text-gray-900">
+                CVS-case distribution
+              </h2>
+              <p className="text-sm text-gray-600">
+                Pie chart of the current filtered submissions by risk level.
+              </p>
+            </div>
+            <div className="h-80">
+              {chartData.riskDistribution.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={chartData.riskDistribution}
+                      dataKey="value"
+                      nameKey="name"
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={110}
+                      innerRadius={55}
+                      paddingAngle={3}
+                    >
+                      {chartData.riskDistribution.map((entry, index) => (
+                        <Cell
+                          key={entry.name}
+                          fill={pieColors[index % pieColors.length]}
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-full flex items-center justify-center text-gray-500 text-sm border border-dashed border-gray-200 rounded-lg">
+                  No data for the selected filters.
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow p-6 border border-gray-200">
+            <div className="mb-4">
+              <h2 className="text-xl font-semibold text-gray-900">
+                Average score by section
+              </h2>
+              <p className="text-sm text-gray-600">
+                Bar chart of average marks for the current filtered submissions.
+              </p>
+            </div>
+            <div className="h-80">
+              {chartData.sectionAverages.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={chartData.sectionAverages}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis allowDecimals={false} />
+                    <Tooltip />
+                    <Bar dataKey="value" fill="#7c3aed" radius={[6, 6, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-full flex items-center justify-center text-gray-500 text-sm border border-dashed border-gray-200 rounded-lg">
+                  No data for the selected filters.
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
         <div className="bg-white rounded-lg shadow p-6 border border-gray-200">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -449,10 +631,10 @@ export default function AdminDashboard() {
                       Devices
                     </th>
                     <th className="px-4 py-3 text-left font-semibold text-gray-700">
-                      21.4
+                      Symptom Frequency
                     </th>
                     <th className="px-4 py-3 text-left font-semibold text-gray-700">
-                      21.5
+                      Screen Use Link
                     </th>
                     <th className="px-4 py-3 text-left font-semibold text-gray-700">
                       Total
@@ -461,7 +643,22 @@ export default function AdminDashboard() {
                       Risk
                     </th>
                     <th className="px-4 py-3 text-left font-semibold text-gray-700">
-                      All Inputs
+                      Section B
+                    </th>
+                    <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                      Section C
+                    </th>
+                    <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                      Symptoms
+                    </th>
+                    <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                      Section D
+                    </th>
+                    <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                      Section E
+                    </th>
+                    <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                      Confirmation
                     </th>
                     <th className="px-4 py-3 text-left font-semibold text-gray-700">
                       Actions
@@ -539,8 +736,8 @@ export default function AdminDashboard() {
                             {risk}
                           </span>
                         </td>
-                        <td className="px-4 py-4 min-w-[560px]">
-                          <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-xs text-gray-700">
+                        <td className="px-4 py-4 min-w-[220px] align-top">
+                          <div className="space-y-1 text-xs text-gray-700">
                             <div>
                               <span className="font-semibold">
                                 Other devices:
@@ -571,6 +768,10 @@ export default function AdminDashboard() {
                               </span>{" "}
                               {displayValue(submission.breaks_frequency)}
                             </div>
+                          </div>
+                        </td>
+                        <td className="px-4 py-4 min-w-[220px] align-top">
+                          <div className="space-y-1 text-xs text-gray-700">
                             <div>
                               <span className="font-semibold">
                                 Eye strain reduction:
@@ -611,6 +812,10 @@ export default function AdminDashboard() {
                               </span>{" "}
                               {displayValue(submission.device_holding_position)}
                             </div>
+                          </div>
+                        </td>
+                        <td className="px-4 py-4 min-w-[220px] align-top">
+                          <div className="space-y-1 text-xs text-gray-700">
                             <div>
                               <span className="font-semibold">
                                 Visual symptoms:
@@ -647,6 +852,10 @@ export default function AdminDashboard() {
                               </span>{" "}
                               {submission.extra_ocular_score}
                             </div>
+                          </div>
+                        </td>
+                        <td className="px-4 py-4 min-w-[220px] align-top">
+                          <div className="space-y-1 text-xs text-gray-700">
                             <div>
                               <span className="font-semibold">
                                 Eye conditions:
@@ -681,6 +890,10 @@ export default function AdminDashboard() {
                               </span>{" "}
                               {displayValue(submission.eye_drops_frequency)}
                             </div>
+                          </div>
+                        </td>
+                        <td className="px-4 py-4 min-w-[220px] align-top">
+                          <div className="space-y-1 text-xs text-gray-700">
                             <div>
                               <span className="font-semibold">
                                 Productivity impact:
@@ -735,15 +948,12 @@ export default function AdminDashboard() {
                               <span className="font-semibold">Help level:</span>{" "}
                               {displayValue(submission.study_habit_help_level)}
                             </div>
-                            <div>
-                              <span className="font-semibold">
-                                Confirmation:
-                              </span>{" "}
-                              {submission.submit_confirmation ? "Yes" : "No"}
-                            </div>
                           </div>
                         </td>
-                        <td className="px-4 py-4 whitespace-nowrap">
+                        <td className="px-4 py-4 whitespace-nowrap align-top text-gray-700">
+                          {submission.submit_confirmation ? "Yes" : "No"}
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap align-top">
                           <Button
                             onClick={() => handleDelete(submission.id)}
                             disabled={deletingId === submission.id}
