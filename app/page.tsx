@@ -86,12 +86,6 @@ export default function Home() {
     productivity_impact: "",
     consulted_eye_care: "",
     changed_study_habits: "",
-    study_habit_changes_description: "",
-    study_habit_changes_list: [] as string[],
-    study_habit_frequency: "",
-    study_habit_association: "",
-    study_habit_apply_frequency: "",
-    study_habit_help_level: "",
     submit_confirmation: "",
   });
 
@@ -157,27 +151,6 @@ export default function Home() {
       return false;
     }
 
-    // Check conditional requirement: if changed_study_habits is "Yes", all sub-questions must be filled
-    if (section === "e" && formData.changed_study_habits === "Yes") {
-      const habitFields = [
-        "study_habit_changes_list",
-        "study_habit_frequency",
-        "study_habit_association",
-        "study_habit_apply_frequency",
-        "study_habit_help_level",
-      ];
-      const habitFieldsValid = habitFields.every((field) => {
-        const value = formData[field as keyof typeof formData];
-        if (Array.isArray(value)) {
-          return value.length > 0;
-        }
-        return value !== "";
-      });
-      if (!habitFieldsValid) {
-        return false;
-      }
-    }
-
     return allFieldsValid;
   };
 
@@ -213,13 +186,15 @@ export default function Home() {
 
       if (response.ok) {
         alert("Questionnaire submitted successfully!");
-        window.location.href = "/";
+        return true;
       } else {
         alert("Error submitting questionnaire");
+        return false;
       }
     } catch (error) {
       console.error("Submission error:", error);
       alert("Error submitting questionnaire");
+      return false;
     } finally {
       setIsSubmitting(false);
     }
@@ -682,12 +657,20 @@ export default function Home() {
               </Button>
 
               <Button
-                onClick={() => {
-                  setCurrentSection("results");
+                onClick={async () => {
+                  if (validateSection("e")) {
+                    const saved = await handleSubmit();
+                    if (saved) {
+                      setCurrentSection("results");
+                    }
+                  } else {
+                    alert("Please fill all required fields in this section");
+                  }
                 }}
+                disabled={isSubmitting}
                 className="flex-1 bg-purple-600 hover:bg-purple-700 text-white"
               >
-                View Results
+                {isSubmitting ? "Submitting..." : "Submit & View Results"}
               </Button>
             </div>
           </div>
@@ -704,12 +687,8 @@ export default function Home() {
               totalScore={scores.total}
               onSubmit={handleSubmit}
               isSubmitting={isSubmitting}
+              showSubmitButton={false}
             />
-            <div className="text-center">
-              <Button onClick={() => setCurrentSection("e")} variant="outline">
-                Back to Edit
-              </Button>
-            </div>
           </div>
         )}
       </div>

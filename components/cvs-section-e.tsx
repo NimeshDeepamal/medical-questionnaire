@@ -1,43 +1,24 @@
+"use client";
 
-'use client';
-
-import { FormSectionHeader, FormQuestion } from './form-section-header';
-import { Textarea } from '@/components/ui/textarea';
+import { FormQuestion, FormSectionHeader } from "./form-section-header";
 
 interface SectionEProps {
   data: {
     productivity_impact: string;
     consulted_eye_care: string;
-    changed_study_habits: string;
-    study_habit_changes_description: string;
-    study_habit_changes_list: string[];
-    study_habit_frequency: string;
-    study_habit_association: string;
+    changed_study_habits: string; // Keep this for the visible question
   };
   onChange: (field: string, value: string | string[]) => void;
 }
 
 const STUDY_HABIT_CHANGES = [
-  'Increased screen breaks',
-  'Adjusted screen distance',
-  'Changed lighting setup'
+  "Increased screen breaks",
+  "Adjusted screen distance",
+  "Changed lighting setup",
 ];
 
 export function CVSSectionE({ data, onChange }: SectionEProps) {
-  const toggleStudyHabitChange = (item: string) => {
-    const currentList = Array.isArray(data.study_habit_changes_list)
-      ? data.study_habit_changes_list
-      : [];
-
-    if (currentList.includes(item)) {
-      onChange(
-        'study_habit_changes_list',
-        currentList.filter((c) => c !== item)
-      );
-    } else {
-      onChange('study_habit_changes_list', [...currentList, item]);
-    }
-  };
+  const toggleStudyHabitChange = (item: string) => {};
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
@@ -59,9 +40,12 @@ export function CVSSectionE({ data, onChange }: SectionEProps) {
           isRequired
         >
           <div className="space-y-2 md:space-y-3">
-            {['Not at all', 'Slightly', 'Moderately', 'Severely'].map(
+            {["Not at all", "Slightly", "Moderately", "Severely"].map(
               (option) => (
-                <div key={option} className="flex items-center space-x-2 md:space-x-3">
+                <div
+                  key={option}
+                  className="flex items-center space-x-2 md:space-x-3"
+                >
                   <input
                     type="radio"
                     id={`prod-${option}`}
@@ -69,7 +53,7 @@ export function CVSSectionE({ data, onChange }: SectionEProps) {
                     value={option}
                     checked={data.productivity_impact === option}
                     onChange={(e) =>
-                      onChange('productivity_impact', e.target.value)
+                      onChange("productivity_impact", e.target.value)
                     }
                     className="w-4 h-4 md:w-5 md:h-5 cursor-pointer accent-purple-600"
                   />
@@ -81,7 +65,7 @@ export function CVSSectionE({ data, onChange }: SectionEProps) {
                     {option}
                   </label>
                 </div>
-              )
+              ),
             )}
           </div>
         </FormQuestion>
@@ -92,8 +76,11 @@ export function CVSSectionE({ data, onChange }: SectionEProps) {
           isRequired
         >
           <div className="space-y-2 md:space-y-3">
-            {['Yes', 'No'].map((option) => (
-              <div key={option} className="flex items-center space-x-2 md:space-x-3">
+            {["Yes", "No"].map((option) => (
+              <div
+                key={option}
+                className="flex items-center space-x-2 md:space-x-3"
+              >
                 <input
                   type="radio"
                   id={`consult-${option}`}
@@ -101,7 +88,7 @@ export function CVSSectionE({ data, onChange }: SectionEProps) {
                   value={option}
                   checked={data.consulted_eye_care === option}
                   onChange={(e) =>
-                    onChange('consulted_eye_care', e.target.value)
+                    onChange("consulted_eye_care", e.target.value)
                   }
                   className="w-4 h-4 md:w-5 md:h-5 cursor-pointer accent-purple-600"
                 />
@@ -123,8 +110,11 @@ export function CVSSectionE({ data, onChange }: SectionEProps) {
           isRequired
         >
           <div className="space-y-2 md:space-y-3">
-            {['Yes', 'No'].map((option) => (
-              <div key={option} className="flex items-center space-x-2 md:space-x-3">
+            {["Yes", "No"].map((option) => (
+              <div
+                key={option}
+                className="flex items-center space-x-2 md:space-x-3"
+              >
                 <input
                   type="radio"
                   id={`habits-${option}`}
@@ -132,7 +122,7 @@ export function CVSSectionE({ data, onChange }: SectionEProps) {
                   value={option}
                   checked={data.changed_study_habits === option}
                   onChange={(e) =>
-                    onChange('changed_study_habits', e.target.value)
+                    onChange("changed_study_habits", e.target.value)
                   }
                   className="w-4 h-4 md:w-5 md:h-5 cursor-pointer accent-purple-600"
                 />

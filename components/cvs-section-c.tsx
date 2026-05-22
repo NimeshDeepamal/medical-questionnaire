@@ -284,7 +284,7 @@ export function CVSSectionC({ data, onChange }: SectionCProps) {
 
         <FormQuestion
           questionNumber="14."
-          questionText="How often do you bend your neck downward while using digital devices?"
+          questionText="Do you bend your neck downward while using digital devices?"
           isRequired
         >
           <div className="space-y-2 md:space-y-3">

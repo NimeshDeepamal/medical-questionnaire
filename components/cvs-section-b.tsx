@@ -272,7 +272,7 @@ export function CVSSectionB({ data, onChange }: SectionBProps) {
                   htmlFor="breaks-frequency"
                   className="block text-gray-700 text-sm md:text-base font-medium"
                 >
-                  How many times do you take breaks?
+                  Frequency
                 </label>
                 <Input
                   id="breaks-frequency"

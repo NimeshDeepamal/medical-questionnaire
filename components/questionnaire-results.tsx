@@ -150,7 +150,7 @@ export function ResultsStep({
             </p>
           </div>
 
-          <div className="flex gap-3 pt-6">
+          {/* <div className="flex gap-3 pt-6">
             <Button
               type="button"
               variant="outline"
@@ -168,7 +168,7 @@ export function ResultsStep({
             >
               {isSubmitting ? 'Submitting...' : 'Submit Assessment'}
             </Button>
-          </div>
+          </div> */}
         </div>
       </Card>
     </div>

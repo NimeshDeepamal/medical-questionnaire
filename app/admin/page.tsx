@@ -63,12 +63,6 @@ interface Questionnaire {
   productivity_impact: string | null;
   consulted_eye_care: string | null;
   changed_study_habits: string | null;
-  study_habit_changes_description: string | null;
-  study_habit_changes_list: string[];
-  study_habit_frequency: string | null;
-  study_habit_association: string | null;
-  study_habit_apply_frequency: string | null;
-  study_habit_help_level: string | null;
   total_score: number;
   submit_confirmation: boolean;
 }
@@ -158,12 +152,6 @@ export default function AdminDashboard() {
           displayValue(sub.productivity_impact),
           displayValue(sub.consulted_eye_care),
           displayValue(sub.changed_study_habits),
-          displayValue(sub.study_habit_changes_description),
-          displayArray(sub.study_habit_changes_list),
-          displayValue(sub.study_habit_frequency),
-          displayValue(sub.study_habit_association),
-          displayValue(sub.study_habit_apply_frequency),
-          displayValue(sub.study_habit_help_level),
           String(sub.total_score),
         ]
           .join(" ")
@@ -377,18 +365,6 @@ export default function AdminDashboard() {
       productivity_impact: displayValue(submission.productivity_impact),
       consulted_eye_care: displayValue(submission.consulted_eye_care),
       changed_study_habits: displayValue(submission.changed_study_habits),
-      study_habit_changes_description: displayValue(
-        submission.study_habit_changes_description,
-      ),
-      study_habit_changes_list: displayArray(
-        submission.study_habit_changes_list,
-      ),
-      study_habit_frequency: displayValue(submission.study_habit_frequency),
-      study_habit_association: displayValue(submission.study_habit_association),
-      study_habit_apply_frequency: displayValue(
-        submission.study_habit_apply_frequency,
-      ),
-      study_habit_help_level: displayValue(submission.study_habit_help_level),
       total_score: submission.total_score,
       risk_level: getRiskLevel(submission.total_score),
       submit_confirmation: submission.submit_confirmation ? "Yes" : "No",
@@ -911,42 +887,6 @@ export default function AdminDashboard() {
                                 Changed habits:
                               </span>{" "}
                               {displayValue(submission.changed_study_habits)}
-                            </div>
-                            <div>
-                              <span className="font-semibold">Habit desc:</span>{" "}
-                              {displayValue(
-                                submission.study_habit_changes_description,
-                              )}
-                            </div>
-                            <div>
-                              <span className="font-semibold">Habit list:</span>{" "}
-                              {displayArray(
-                                submission.study_habit_changes_list,
-                              )}
-                            </div>
-                            <div>
-                              <span className="font-semibold">
-                                Habit frequency:
-                              </span>{" "}
-                              {displayValue(submission.study_habit_frequency)}
-                            </div>
-                            <div>
-                              <span className="font-semibold">
-                                Habit association:
-                              </span>{" "}
-                              {displayValue(submission.study_habit_association)}
-                            </div>
-                            <div>
-                              <span className="font-semibold">
-                                Apply frequency:
-                              </span>{" "}
-                              {displayValue(
-                                submission.study_habit_apply_frequency,
-                              )}
-                            </div>
-                            <div>
-                              <span className="font-semibold">Help level:</span>{" "}
-                              {displayValue(submission.study_habit_help_level)}
                             </div>
                           </div>
                         </td>

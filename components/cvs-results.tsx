@@ -17,6 +17,7 @@ interface CVSResultsProps {
   recommendationImageHref?: string;
   onSubmit: () => void;
   isSubmitting?: boolean;
+  showSubmitButton?: boolean;
 }
 
 export function CVSResults({
@@ -29,6 +30,7 @@ export function CVSResults({
   recommendationImageHref = "/img.jpeg",
   onSubmit,
   isSubmitting = false,
+  showSubmitButton = true,
 }: CVSResultsProps) {
   const colorClasses = getRiskColor(totalScore);
   const textColorClass = getRiskTextColor(totalScore);
@@ -203,15 +205,17 @@ export function CVSResults({
         </div>
 
         {/* Submit Button */}
-        <div className="flex gap-4">
-          <Button
-            onClick={onSubmit}
-            disabled={isSubmitting}
-            className="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 text-lg"
-          >
-            {isSubmitting ? "Submitting..." : "Submit & Save Results"}
-          </Button>
-        </div>
+        {showSubmitButton && (
+          <div className="flex gap-4">
+            <Button
+              onClick={onSubmit}
+              disabled={isSubmitting}
+              className="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 text-lg"
+            >
+              {isSubmitting ? "Submitting..." : "Submit & Save Results"}
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
