@@ -264,7 +264,7 @@ export default function Home() {
                   take appropriate measures to protect your eye health.
                 </p>
                 <p className="text-purple-900 mt-3">
-                  For further information, download the{' '}
+                  For further information,{' '}
                   <a
                     href="/information%20sheet%20and%20volunteer%20consent%20form.pdf"
                     target="_blank"
