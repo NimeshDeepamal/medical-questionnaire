@@ -510,7 +510,7 @@ export default function Home() {
                     htmlFor="freq-rare"
                     className="text-gray-700 cursor-pointer text-base"
                   >
-                    Rare
+                    Never
                   </label>
                 </div>
                 <div className="flex items-center space-x-3">

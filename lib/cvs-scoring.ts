@@ -36,7 +36,7 @@ function calculateThreeOptionScore(
 ): number {
   if (selectedValue === firstOption) return 0;
   if (selectedValue === secondOption) return 1;
-  if (selectedValue === thirdOption) return 3;
+  if (selectedValue === thirdOption) return 2;
   return 0;
 }
 
