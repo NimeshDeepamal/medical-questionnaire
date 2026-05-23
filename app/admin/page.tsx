@@ -181,17 +181,22 @@ export default function AdminDashboard() {
     return {
       avgScore,
       riskCounts: {
-        "No CVS Symptoms": submissions.filter(
-          (s) => getRiskLevel(s.total_score) === "No CVS Symptoms",
+        "Normal subject": submissions.filter(
+          (s) => getRiskLevel(s.total_score) === "Normal subject",
         ).length,
-        "Mild CVS": submissions.filter(
-          (s) => getRiskLevel(s.total_score) === "Mild CVS",
+        "Not CVS-case": submissions.filter(
+          (s) => getRiskLevel(s.total_score) === "Not CVS-case",
         ).length,
-        "Moderate CVS": submissions.filter(
-          (s) => getRiskLevel(s.total_score) === "Moderate CVS",
+        "Low probability": submissions.filter(
+          (s) => getRiskLevel(s.total_score) === "Low probability",
         ).length,
-        "Severe CVS": submissions.filter(
-          (s) => getRiskLevel(s.total_score) === "Severe CVS",
+        "High probability": submissions.filter(
+          (s) => getRiskLevel(s.total_score) === "High probability",
+        ).length,
+        "Positive CVS-case (CVS diagnosis is confirmed)": submissions.filter(
+          (s) =>
+            getRiskLevel(s.total_score) ===
+            "Positive CVS-case (CVS diagnosis is confirmed)",
         ).length,
       },
     };
@@ -200,27 +205,35 @@ export default function AdminDashboard() {
   const chartData = useMemo(() => {
     const riskDistribution = [
       {
-        name: "No CVS Symptoms",
+        name: "Normal subject",
         value: filteredSubmissions.filter(
-          (s) => getRiskLevel(s.total_score) === "No CVS Symptoms",
+          (s) => getRiskLevel(s.total_score) === "Normal subject",
         ).length,
       },
       {
-        name: "Mild CVS",
+        name: "Not CVS-case",
         value: filteredSubmissions.filter(
-          (s) => getRiskLevel(s.total_score) === "Mild CVS",
+          (s) => getRiskLevel(s.total_score) === "Not CVS-case",
         ).length,
       },
       {
-        name: "Moderate CVS",
+        name: "Low probability",
         value: filteredSubmissions.filter(
-          (s) => getRiskLevel(s.total_score) === "Moderate CVS",
+          (s) => getRiskLevel(s.total_score) === "Low probability",
         ).length,
       },
       {
-        name: "Severe CVS",
+        name: "High probability",
         value: filteredSubmissions.filter(
-          (s) => getRiskLevel(s.total_score) === "Severe CVS",
+          (s) => getRiskLevel(s.total_score) === "High probability",
+        ).length,
+      },
+      {
+        name: "Positive CVS-case (CVS diagnosis is confirmed)",
+        value: filteredSubmissions.filter(
+          (s) =>
+            getRiskLevel(s.total_score) ===
+            "Positive CVS-case (CVS diagnosis is confirmed)",
         ).length,
       },
     ].filter((item) => item.value > 0);
@@ -445,24 +458,36 @@ export default function AdminDashboard() {
               </p>
             </div>
             <div className="bg-green-50 rounded-lg shadow p-6 border border-green-200">
-              <p className="text-green-700 text-sm font-medium">No Symptoms</p>
+              <p className="text-green-700 text-sm font-medium">Normal</p>
               <p className="text-3xl font-bold text-green-900 mt-2">
-                {stats.riskCounts["No CVS Symptoms"]}
+                {stats.riskCounts["Normal subject"]}
               </p>
             </div>
             <div className="bg-yellow-50 rounded-lg shadow p-6 border border-yellow-200">
-              <p className="text-yellow-700 text-sm font-medium">Mild CVS</p>
+              <p className="text-yellow-700 text-sm font-medium">
+                Not CVS-case
+              </p>
               <p className="text-3xl font-bold text-yellow-900 mt-2">
-                {stats.riskCounts["Mild CVS"]}
+                {stats.riskCounts["Not CVS-case"]}
+              </p>
+            </div>
+            <div className="bg-orange-50 rounded-lg shadow p-6 border border-orange-200">
+              <p className="text-orange-700 text-sm font-medium">
+                Low probability
+              </p>
+              <p className="text-3xl font-bold text-orange-900 mt-2">
+                {stats.riskCounts["Low probability"]}
               </p>
             </div>
             <div className="bg-red-50 rounded-lg shadow p-6 border border-red-200">
               <p className="text-red-700 text-sm font-medium">
-                Moderate+Severe
+                High + Positive
               </p>
               <p className="text-3xl font-bold text-red-900 mt-2">
-                {stats.riskCounts["Moderate CVS"] +
-                  stats.riskCounts["Severe CVS"]}
+                {stats.riskCounts["High probability"] +
+                  stats.riskCounts[
+                    "Positive CVS-case (CVS diagnosis is confirmed)"
+                  ]}
               </p>
             </div>
           </div>
@@ -564,10 +589,13 @@ export default function AdminDashboard() {
                 className="w-full border border-gray-300 rounded px-3 py-2"
               >
                 <option value="all">All Risk Levels</option>
-                <option value="No CVS Symptoms">No CVS Symptoms</option>
-                <option value="Mild CVS">Mild CVS</option>
-                <option value="Moderate CVS">Moderate CVS</option>
-                <option value="Severe CVS">Severe CVS</option>
+                <option value="Normal subject">Normal subject</option>
+                <option value="Not CVS-case">Not CVS-case</option>
+                <option value="Low probability">Low probability</option>
+                <option value="High probability">High probability</option>
+                <option value="Positive CVS-case (CVS diagnosis is confirmed)">
+                  Positive CVS-case (CVS diagnosis is confirmed)
+                </option>
               </select>
             </div>
           </div>

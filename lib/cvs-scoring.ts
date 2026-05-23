@@ -77,14 +77,16 @@ export function calculateTotalScore(
 }
 
 export function getRiskLevel(totalScore: number): string {
-  if (totalScore <= 2) {
-    return "No CVS Symptoms";
+  if (totalScore === 0) {
+    return "Normal subject";
+  } else if (totalScore <= 2) {
+    return "Not CVS-case";
   } else if (totalScore <= 4) {
-    return "Mild CVS";
+    return "Low probability";
   } else if (totalScore <= 6) {
-    return "Moderate CVS";
+    return "High probability";
   } else {
-    return "Severe CVS";
+    return "Positive CVS-case (CVS diagnosis is confirmed)";
   }
 }
 
