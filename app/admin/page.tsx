@@ -300,10 +300,36 @@ export default function AdminDashboard() {
             },
           ];
 
-    return { riskDistribution, sectionAverages };
+    const submissionScores = filteredSubmissions.map((submission, index) => ({
+      name: `Submission ${index + 1}`,
+      value: submission.total_score,
+      risk: getRiskLevel(submission.total_score),
+    }));
+
+    return { riskDistribution, sectionAverages, submissionScores };
   }, [filteredSubmissions]);
 
-  const pieColors = ["#16a34a", "#eab308", "#f97316", "#ef4444"];
+  const pieColors = ["#16a34a", "#2563eb", "#eab308", "#f97316", "#ef4444"];
+
+  const sectionColors = [
+    "#2563eb",
+    "#16a34a",
+    "#f97316",
+    "#8b5cf6",
+    "#ec4899",
+    "#14b8a6",
+  ];
+
+  const submissionColors = [
+    "#0f766e",
+    "#2563eb",
+    "#7c3aed",
+    "#db2777",
+    "#ea580c",
+    "#16a34a",
+    "#dc2626",
+    "#4f46e5",
+  ];
 
   const handleLogout = () => {
     sessionStorage.removeItem("adminAuthenticated");
@@ -442,7 +468,7 @@ export default function AdminDashboard() {
 
       <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
         {stats && (
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
             <div className="bg-white rounded-lg shadow p-6 border border-gray-200">
               <p className="text-gray-600 text-sm font-medium">
                 Total Submissions
@@ -481,13 +507,22 @@ export default function AdminDashboard() {
             </div>
             <div className="bg-red-50 rounded-lg shadow p-6 border border-red-200">
               <p className="text-red-700 text-sm font-medium">
-                High + Positive
+                High probability
               </p>
               <p className="text-3xl font-bold text-red-900 mt-2">
-                {stats.riskCounts["High probability"] +
+                {stats.riskCounts["High probability"]}
+              </p>
+            </div>
+            <div className="bg-red-100 rounded-lg shadow p-6 border border-red-300">
+              <p className="text-red-700 text-sm font-medium">
+                Positive CVS-case
+              </p>
+              <p className="text-3xl font-bold text-red-900 mt-2">
+                {
                   stats.riskCounts[
                     "Positive CVS-case (CVS diagnosis is confirmed)"
-                  ]}
+                  ]
+                }
               </p>
             </div>
           </div>
