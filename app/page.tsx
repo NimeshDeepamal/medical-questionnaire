@@ -263,6 +263,18 @@ export default function Home() {
                   syndrome. This can help you understand your risk level and
                   take appropriate measures to protect your eye health.
                 </p>
+                <p className="text-purple-900 mt-3">
+                  For further information, download the{' '}
+                  <a
+                    href="/information%20sheet%20and%20volunteer%20consent%20form.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline font-medium"
+                  >
+                    Information Sheet and Volunteer Consent Form (PDF)
+                  </a>
+                  .
+                </p>
               </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-3 mt-6 md:mt-8">
