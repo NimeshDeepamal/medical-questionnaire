@@ -56,6 +56,8 @@ export default function Home() {
     age: "",
     gender: "",
     faculty_of_study: "",
+    academic_year: "",
+    average_screen_time: "",
     digital_devices: [] as string[],
     digital_devices_other: "",
     consecutive_hours: "",
@@ -100,6 +102,7 @@ export default function Home() {
     const requiredFields: Record<string, string[]> = {
       a: ["age", "gender", "faculty_of_study"],
       b: [
+        "average_screen_time",
         "digital_devices",
         "consecutive_hours",
         "screen_viewing_distance",
@@ -124,6 +127,8 @@ export default function Home() {
       symptoms: ["symptoms_frequency", "associated_with_screen_use"],
       e: ["productivity_impact", "consulted_eye_care", "changed_study_habits"],
     };
+    // include academic year as required for section A
+    requiredFields.a.push("academic_year");
 
     const fields = requiredFields[section] || [];
     const allFieldsValid = fields.every((field) => {
@@ -445,7 +450,7 @@ export default function Home() {
         {currentSection === "symptoms" && (
           <div className="space-y-6">
             <CVSSymptomsSection
-              sectionNumber={21.1}
+              sectionNumber={22.1}
               sectionTitle="Visual symptoms"
               symptomsList={VISUAL_SYMPTOMS}
               scoreOptions={[]}
@@ -458,7 +463,7 @@ export default function Home() {
             />
 
             <CVSSymptomsSection
-              sectionNumber={21.2}
+              sectionNumber={22.2}
               sectionTitle="Ocular Surface complaints"
               symptomsList={OCULAR_SURFACE_SYMPTOMS}
               scoreOptions={[]}
@@ -471,7 +476,7 @@ export default function Home() {
             />
 
             <CVSSymptomsSection
-              sectionNumber={21.3}
+              sectionNumber={22.3}
               sectionTitle="Extra-ocular complaints"
               symptomsList={EXTRA_OCULAR_SYMPTOMS}
               scoreOptions={[]}
@@ -486,7 +491,7 @@ export default function Home() {
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-6">
               <div className="border-b pb-4">
                 <h3 className="text-lg font-semibold text-gray-900">
-                  21.4 Symptom Frequency <span className="text-red-500">*</span>
+                  22.4 Symptom Frequency <span className="text-red-500">*</span>
                 </h3>
                 <p className="text-gray-600 text-sm mt-1">
                   If yes, Frequency of those above mentioned symptoms in
@@ -557,7 +562,7 @@ export default function Home() {
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-6">
               <div className="border-b pb-4">
                 <h3 className="text-lg font-semibold text-gray-900">
-                  21.5 Screen Time Association{" "}
+                  22.5 Screen Time Association{" "}
                   <span className="text-red-500">*</span>
                 </h3>
                 <p className="text-gray-600 text-sm mt-1">

@@ -55,7 +55,7 @@ export function CVSSectionD({ data, onChange }: SectionDProps) {
 
       <div className="p-4 md:p-6 space-y-4 md:space-y-6">
         <FormQuestion
-          questionNumber="16."
+          questionNumber="17."
           questionText="Do you have any of the following eye conditions or factors? (Pre-diagnosed)"
           isRequired
         >
@@ -85,7 +85,7 @@ export function CVSSectionD({ data, onChange }: SectionDProps) {
         </FormQuestion>
 
         <FormQuestion
-          questionNumber="17."
+          questionNumber="18."
           questionText="Do you wear corrective lenses? (or spectacles)"
           isRequired
         >
@@ -116,7 +116,7 @@ export function CVSSectionD({ data, onChange }: SectionDProps) {
         </FormQuestion>
 
         <FormQuestion
-          questionNumber="18."
+          questionNumber="19."
           questionText="How many hours of sleep do you get on average per night?"
           isRequired
         >
@@ -145,7 +145,7 @@ export function CVSSectionD({ data, onChange }: SectionDProps) {
         </FormQuestion>
 
         <FormQuestion
-          questionNumber="19."
+          questionNumber="20."
           questionText="Do you use your devices for a long time just before sleeping at night?"
           isRequired
         >
@@ -176,7 +176,7 @@ export function CVSSectionD({ data, onChange }: SectionDProps) {
         </FormQuestion>
 
         <FormQuestion
-          questionNumber="20."
+          questionNumber="21."
           questionText="Do you use any eye drops such as: artificial tears regularly?"
           isRequired
         >
@@ -208,7 +208,7 @@ export function CVSSectionD({ data, onChange }: SectionDProps) {
 
         {data.eye_drops_usage === 'Yes' && (
           <FormQuestion
-            questionNumber="20.1"
+            questionNumber="21.1"
             questionText="If yes frequency"
             isRequired
           >

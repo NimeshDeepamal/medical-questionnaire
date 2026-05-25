@@ -42,7 +42,7 @@ export function CVSSectionC({ data, onChange }: SectionCProps) {
 
       <div className="p-4 md:p-6 space-y-4 md:space-y-6">
         <FormQuestion
-          questionNumber="9."
+          questionNumber="10."
           questionText="Do you use any of the following to reduce eye strain?"
           isRequired
         >
@@ -65,7 +65,7 @@ export function CVSSectionC({ data, onChange }: SectionCProps) {
         </FormQuestion>
 
         <FormQuestion
-          questionNumber="10."
+          questionNumber="11."
           questionText="How would you describe your lighting conditions during screen use?"
           isRequired
         >
@@ -116,7 +116,7 @@ export function CVSSectionC({ data, onChange }: SectionCProps) {
         </FormQuestion>
 
         <FormQuestion
-          questionNumber="11."
+          questionNumber="12."
           questionText="Is your screen positioned?"
           isRequired
         >
@@ -167,7 +167,7 @@ export function CVSSectionC({ data, onChange }: SectionCProps) {
         </FormQuestion>
 
         <FormQuestion
-          questionNumber="12."
+          questionNumber="13."
           questionText="How would you describe your usual sitting posture while using digital devices?"
           isRequired
         >
@@ -232,7 +232,7 @@ export function CVSSectionC({ data, onChange }: SectionCProps) {
         </FormQuestion>
 
         <FormQuestion
-          questionNumber="13."
+          questionNumber="14."
           questionText="Do you use a chair with adequate back support while using a digital device?"
           isRequired
         >
@@ -283,7 +283,7 @@ export function CVSSectionC({ data, onChange }: SectionCProps) {
         </FormQuestion>
 
         <FormQuestion
-          questionNumber="14."
+          questionNumber="15."
           questionText="Do you bend your neck downward while using digital devices?"
           isRequired
         >
@@ -348,7 +348,7 @@ export function CVSSectionC({ data, onChange }: SectionCProps) {
         </FormQuestion>
 
         <FormQuestion
-          questionNumber="15."
+          questionNumber="16."
           questionText="How do you usually hold or place your digital device during use?"
           isRequired
         >

@@ -35,7 +35,7 @@ export function CVSSectionE({ data, onChange }: SectionEProps) {
 
       <div className="p-4 md:p-6 space-y-4 md:space-y-6">
         <FormQuestion
-          questionNumber="22."
+          questionNumber="23."
           questionText="Do your symptoms affect your productivity?"
           isRequired
         >
@@ -71,7 +71,7 @@ export function CVSSectionE({ data, onChange }: SectionEProps) {
         </FormQuestion>
 
         <FormQuestion
-          questionNumber="23."
+          questionNumber="24."
           questionText="Have you consulted an eye care professional for these symptoms?"
           isRequired
         >
@@ -105,7 +105,7 @@ export function CVSSectionE({ data, onChange }: SectionEProps) {
         </FormQuestion>
 
         <FormQuestion
-          questionNumber="24."
+          questionNumber="25."
           questionText="Have you changed your study habits due to CVS symptoms?"
           isRequired
         >

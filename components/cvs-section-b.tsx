@@ -7,6 +7,7 @@ interface SectionBProps {
   data: {
     digital_devices: string[];
     digital_devices_other: string;
+    average_screen_time: string;
     consecutive_hours: string;
     screen_viewing_distance: string;
     regular_breaks: string;
@@ -83,6 +84,31 @@ export function CVSSectionB({ data, onChange }: SectionBProps) {
 
         <FormQuestion
           questionNumber="6."
+          questionText="What's your average screen time per day?(all devices)"
+          isRequired
+        >
+          <div className="space-y-3">
+            {['< 2 hours', '2-4 hours', '5-7 hours', '8-10 hours'].map((opt) => (
+              <div key={opt} className="flex items-center space-x-3">
+                <input
+                  type="radio"
+                  id={`avg-${opt}`}
+                  name="average_screen_time"
+                  value={opt}
+                  checked={data.average_screen_time === opt}
+                  onChange={(e) => onChange('average_screen_time', e.target.value)}
+                  className="w-5 h-5 cursor-pointer accent-purple-600"
+                />
+                <label htmlFor={`avg-${opt}`} className="text-gray-700 cursor-pointer text-base">
+                  {opt}
+                </label>
+              </div>
+            ))}
+          </div>
+        </FormQuestion>
+
+        <FormQuestion
+          questionNumber="7."
           questionText="For work/study, how many consecutive hours do you spend looking at screens without a break?"
           isRequired
         >
@@ -159,7 +185,7 @@ export function CVSSectionB({ data, onChange }: SectionBProps) {
         </FormQuestion>
 
         <FormQuestion
-          questionNumber="7."
+          questionNumber="8."
           questionText="What is your typical screen viewing distance?"
           isRequired
         >
@@ -244,7 +270,7 @@ export function CVSSectionB({ data, onChange }: SectionBProps) {
         </FormQuestion>
 
         <FormQuestion
-          questionNumber="8."
+          questionNumber="9."
           questionText="How often do you take breaks during screen use?"
           isRequired
         >
@@ -281,46 +307,46 @@ export function CVSSectionB({ data, onChange }: SectionBProps) {
                   value={data.breaks_frequency}
                   onChange={(e) => onChange("breaks_frequency", e.target.value)}
                   className="border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-purple-600"
+                  />
+                </div>
+              )}
+              <div className="flex items-center space-x-3">
+                <input
+                  type="radio"
+                  id="breaks-sometimes"
+                  name="regular_breaks"
+                  value="Sometimes"
+                  checked={data.regular_breaks === "Sometimes"}
+                  onChange={(e) => onChange("regular_breaks", e.target.value)}
+                  className="w-5 h-5 cursor-pointer accent-purple-600"
                 />
+                <label
+                  htmlFor="breaks-sometimes"
+                  className="text-gray-700 cursor-pointer text-base"
+                >
+                  Sometimes
+                </label>
               </div>
-            )}
-            <div className="flex items-center space-x-3">
-              <input
-                type="radio"
-                id="breaks-sometimes"
-                name="regular_breaks"
-                value="Sometimes"
-                checked={data.regular_breaks === "Sometimes"}
-                onChange={(e) => onChange("regular_breaks", e.target.value)}
-                className="w-5 h-5 cursor-pointer accent-purple-600"
-              />
-              <label
-                htmlFor="breaks-sometimes"
-                className="text-gray-700 cursor-pointer text-base"
-              >
-                Sometimes
-              </label>
+              <div className="flex items-center space-x-3">
+                <input
+                  type="radio"
+                  id="breaks-never"
+                  name="regular_breaks"
+                  value="Never"
+                  checked={data.regular_breaks === "Never"}
+                  onChange={(e) => onChange("regular_breaks", e.target.value)}
+                  className="w-5 h-5 cursor-pointer accent-purple-600"
+                />
+                <label
+                  htmlFor="breaks-never"
+                  className="text-gray-700 cursor-pointer text-base"
+                >
+                  Never
+                </label>
+              </div>
             </div>
-            <div className="flex items-center space-x-3">
-              <input
-                type="radio"
-                id="breaks-never"
-                name="regular_breaks"
-                value="Never"
-                checked={data.regular_breaks === "Never"}
-                onChange={(e) => onChange("regular_breaks", e.target.value)}
-                className="w-5 h-5 cursor-pointer accent-purple-600"
-              />
-              <label
-                htmlFor="breaks-never"
-                className="text-gray-700 cursor-pointer text-base"
-              >
-                Never
-              </label>
-            </div>
-          </div>
-        </FormQuestion>
+          </FormQuestion>
+        </div>
       </div>
-    </div>
-  );
+    );
 }

@@ -33,6 +33,8 @@ interface Questionnaire {
   age: string;
   gender: string;
   faculty_of_study: string;
+  academic_year?: string | null;
+  average_screen_time?: string | null;
   digital_devices: string[];
   digital_devices_other: string | null;
   consecutive_hours: string | null;
@@ -125,6 +127,8 @@ export default function AdminDashboard() {
           sub.age,
           sub.gender,
           sub.faculty_of_study,
+          displayValue(sub.academic_year),
+          displayValue(sub.average_screen_time),
           displayArray(sub.digital_devices),
           displayValue(sub.digital_devices_other),
           displayValue(sub.consecutive_hours),
@@ -267,7 +271,7 @@ export default function AdminDashboard() {
                 ) / filteredSubmissions.length,
             },
             {
-              name: "21.4",
+              name: "22.4",
               value:
                 filteredSubmissions.reduce(
                   (sum, sub) =>
@@ -279,7 +283,7 @@ export default function AdminDashboard() {
                 ) / filteredSubmissions.length,
             },
             {
-              name: "21.5",
+              name: "22.5",
               value:
                 filteredSubmissions.reduce(
                   (sum, sub) =>
@@ -372,6 +376,8 @@ export default function AdminDashboard() {
       age: submission.age,
       gender: submission.gender,
       faculty_of_study: submission.faculty_of_study,
+      academic_year: displayValue(submission.academic_year),
+      average_screen_time: displayValue(submission.average_screen_time),
       digital_devices: displayArray(submission.digital_devices),
       digital_devices_other: displayValue(submission.digital_devices_other),
       consecutive_hours: displayValue(submission.consecutive_hours),
@@ -420,11 +426,9 @@ export default function AdminDashboard() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Redirecting to login...</p>
-        </div>
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+        <p className="text-gray-600">Redirecting to login...</p>
       </div>
     );
   }
@@ -432,36 +436,34 @@ export default function AdminDashboard() {
   return (
     <main className="min-h-screen bg-gray-50">
       <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">
-                CVS Submissions Dashboard
-              </h1>
-              <p className="text-gray-600 mt-1">
-                View, export, and manage questionnaire submissions
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <Button
-                onClick={exportToExcel}
-                className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white"
-              >
-                Export Excel
+        <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">
+              CVS Submissions Dashboard
+            </h1>
+            <p className="text-gray-600 mt-1">
+              View, export, and manage questionnaire submissions
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              onClick={exportToExcel}
+              className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white"
+            >
+              Export Excel
+            </Button>
+            <Link href="/">
+              <Button variant="outline" className="px-6 py-2">
+                Back to Form
               </Button>
-              <Link href="/">
-                <Button variant="outline" className="px-6 py-2">
-                  Back to Form
-                </Button>
-              </Link>
-              <Button
-                onClick={handleLogout}
-                variant="outline"
-                className="px-6 py-2 text-red-600 hover:text-red-700 hover:bg-red-50"
-              >
-                Logout
-              </Button>
-            </div>
+            </Link>
+            <Button
+              onClick={handleLogout}
+              variant="outline"
+              className="px-6 py-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+            >
+              Logout
+            </Button>
           </div>
         </div>
       </header>
