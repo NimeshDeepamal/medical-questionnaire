@@ -424,6 +424,100 @@ export default function AdminDashboard() {
     );
   };
 
+  const AVG_SCREEN_OPTIONS = [
+    "< 2 hours",
+    "2-4 hours",
+    "5-7 hours",
+    "8-10 hours",
+  ];
+  const STRAIN_REDUCTION_OPTIONS = [
+    "Anti-glare screen",
+    "Blue light filter glasses",
+    "Screen brightness adjusted",
+    "Adjusted workstation setup",
+    "None",
+  ];
+  const EYE_CONDITIONS_OPTIONS = [
+    "Dry eye disease",
+    "History of any Past eye surgeries",
+    "Migraine",
+    "Chronic headache disorders",
+    "None",
+  ];
+
+  const renderYesNoForSingle = (
+    selected?: string | null,
+    options?: string[],
+  ) => {
+    if (!options) return null;
+    return (
+      <div className="space-y-1 text-xs text-gray-700">
+        {options.map((opt) => (
+          <div key={opt} className="flex items-center space-x-2">
+            <div className="w-40 text-gray-700">{opt}</div>
+            <label className="flex items-center space-x-1">
+              <input
+                type="checkbox"
+                checked={selected === opt}
+                disabled
+                className="w-4 h-4"
+              />
+              <span className="text-xs text-gray-500">Yes</span>
+            </label>
+            <label className="flex items-center space-x-1">
+              <input
+                type="checkbox"
+                checked={selected !== opt}
+                disabled
+                className="w-4 h-4"
+              />
+              <span className="text-xs text-gray-500">No</span>
+            </label>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const renderYesNoForMultiple = (
+    selectedArr?: string[] | null,
+    options?: string[],
+  ) => {
+    if (!options) return null;
+    const selectedSet = new Set(selectedArr || []);
+    return (
+      <div className="space-y-1 text-xs text-gray-700">
+        {options.map((opt) => (
+          <div key={opt} className="flex items-center space-x-2">
+            <div
+              className={`w-40 ${opt === "Migraine" && selectedSet.has("Migraine") ? "font-semibold text-red-700" : "text-gray-700"}`}
+            >
+              {opt}
+            </div>
+            <label className="flex items-center space-x-1">
+              <input
+                type="checkbox"
+                checked={selectedSet.has(opt)}
+                disabled
+                className="w-4 h-4"
+              />
+              <span className="text-xs text-gray-500">Yes</span>
+            </label>
+            <label className="flex items-center space-x-1">
+              <input
+                type="checkbox"
+                checked={!selectedSet.has(opt)}
+                disabled
+                className="w-4 h-4"
+              />
+              <span className="text-xs text-gray-500">No</span>
+            </label>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   if (!isAuthenticated) {
     return (
       <div className="text-center">
@@ -799,6 +893,17 @@ export default function AdminDashboard() {
                             </div>
                             <div>
                               <span className="font-semibold">
+                                Average screen time:
+                              </span>
+                              <div className="mt-1">
+                                {renderYesNoForSingle(
+                                  submission.average_screen_time,
+                                  AVG_SCREEN_OPTIONS,
+                                )}
+                              </div>
+                            </div>
+                            <div>
+                              <span className="font-semibold">
                                 Regular breaks:
                               </span>{" "}
                               {displayValue(submission.regular_breaks)}
@@ -816,8 +921,13 @@ export default function AdminDashboard() {
                             <div>
                               <span className="font-semibold">
                                 Eye strain reduction:
-                              </span>{" "}
-                              {displayArray(submission.eye_strain_reduction)}
+                              </span>
+                              <div className="mt-1">
+                                {renderYesNoForMultiple(
+                                  submission.eye_strain_reduction,
+                                  STRAIN_REDUCTION_OPTIONS,
+                                )}
+                              </div>
                             </div>
                             <div>
                               <span className="font-semibold">Lighting:</span>{" "}
@@ -900,8 +1010,13 @@ export default function AdminDashboard() {
                             <div>
                               <span className="font-semibold">
                                 Eye conditions:
-                              </span>{" "}
-                              {displayArray(submission.eye_conditions)}
+                              </span>
+                              <div className="mt-1">
+                                {renderYesNoForMultiple(
+                                  submission.eye_conditions,
+                                  EYE_CONDITIONS_OPTIONS,
+                                )}
+                              </div>
                             </div>
                             <div>
                               <span className="font-semibold">

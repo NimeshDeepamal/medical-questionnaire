@@ -46,6 +46,43 @@ const EXTRA_OCULAR_SYMPTOMS = [
   "Inattention",
 ];
 
+const DIGITAL_DEVICE_OPTIONS = [
+  "Desktop",
+  "Laptop",
+  "Tablet",
+  "Smartphone",
+  "Other",
+];
+
+const AVERAGE_SCREEN_TIME_OPTIONS = [
+  "< 2 hours",
+  "2-4 hours",
+  "5-7 hours",
+  "8-10 hours",
+];
+
+const EYE_STRAIN_REDUCTION_OPTIONS = [
+  "Anti-glare screen",
+  "Blue light filter glasses",
+  "Screen brightness adjusted",
+  "Adjusted workstation setup",
+  "None",
+];
+
+const EYE_CONDITION_OPTIONS = [
+  "Dry eye disease",
+  "History of any Past eye surgeries",
+  "Migraine",
+  "Chronic headache disorders",
+  "None",
+];
+
+const createAnswerMap = (options: string[]) =>
+  options.reduce<Record<string, "" | "Yes" | "No">>((map, option) => {
+    map[option] = "";
+    return map;
+  }, {});
+
 export default function Home() {
   const [currentSection, setCurrentSection] = useState<
     "landing" | "start" | "a" | "b" | "c" | "symptoms" | "d" | "e" | "results"
@@ -59,12 +96,14 @@ export default function Home() {
     academic_year: "",
     average_screen_time: "",
     digital_devices: [] as string[],
+    digital_devices_answers: createAnswerMap(DIGITAL_DEVICE_OPTIONS),
     digital_devices_other: "",
     consecutive_hours: "",
     screen_viewing_distance: "",
     regular_breaks: "",
     breaks_frequency: "",
     eye_strain_reduction: [] as string[],
+    eye_strain_reduction_answers: createAnswerMap(EYE_STRAIN_REDUCTION_OPTIONS),
     lighting_conditions: "",
     screen_position: "",
     sitting_posture: "",
@@ -80,6 +119,7 @@ export default function Home() {
     symptoms_frequency: "",
     associated_with_screen_use: "",
     eye_conditions: [] as string[],
+    eye_conditions_answers: createAnswerMap(EYE_CONDITION_OPTIONS),
     corrective_lenses: "",
     device_use_before_sleep: "",
     sleep_hours: "",
@@ -91,38 +131,43 @@ export default function Home() {
     submit_confirmation: "",
   });
 
-  const handleFieldChange = (field: string, value: string | string[]) => {
+  const handleFieldChange = (
+    field: string,
+    value: string | string[] | Record<string, string>,
+  ) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
     }));
   };
 
+  const isAnswerMapComplete = (answers: Record<string, string>) =>
+    Object.values(answers).every((value) => value === "Yes" || value === "No");
+
   const validateSection = (section: string): boolean => {
     const requiredFields: Record<string, string[]> = {
       a: ["age", "gender", "faculty_of_study"],
       b: [
-        "average_screen_time",
         "digital_devices",
         "consecutive_hours",
         "screen_viewing_distance",
         "regular_breaks",
       ],
       c: [
-        "eye_strain_reduction",
         "lighting_conditions",
         "screen_position",
         "sitting_posture",
         "chair_support",
         "neck_bending_frequency",
         "device_holding_position",
+        "eye_strain_reduction_answers",
       ],
       d: [
-        "eye_conditions",
         "corrective_lenses",
         "device_use_before_sleep",
         "sleep_hours",
         "eye_drops_usage",
+        "eye_conditions_answers",
       ],
       symptoms: ["symptoms_frequency", "associated_with_screen_use"],
       e: ["productivity_impact", "consulted_eye_care", "changed_study_habits"],
@@ -136,6 +181,9 @@ export default function Home() {
       if (Array.isArray(value)) {
         return value.length > 0;
       }
+      if (value && typeof value === "object") {
+        return isAnswerMapComplete(value as Record<string, string>);
+      }
       return value !== "";
     });
 
@@ -144,6 +192,13 @@ export default function Home() {
       section === "d" &&
       formData.eye_drops_usage === "Yes" &&
       !formData.eye_drops_frequency
+    ) {
+      return false;
+    }
+
+    if (
+      section === "b" &&
+      !isAnswerMapComplete(formData.digital_devices_answers)
     ) {
       return false;
     }
@@ -269,7 +324,7 @@ export default function Home() {
                   take appropriate measures to protect your eye health.
                 </p>
                 <p className="text-purple-900 mt-3">
-                  For further information,{' '}
+                  For further information,{" "}
                   <a
                     href="/information%20sheet%20and%20volunteer%20consent%20form.pdf"
                     target="_blank"

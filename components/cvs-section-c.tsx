@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { FormSectionHeader, FormQuestion } from './form-section-header';
-import { Input } from '@/components/ui/input';
+import { FormQuestion, FormSectionHeader } from "./form-section-header";
 
 interface SectionCProps {
   data: {
     eye_strain_reduction: string[];
+    eye_strain_reduction_answers: Record<string, "" | "Yes" | "No">;
     lighting_conditions: string;
     screen_position: string;
     sitting_posture: string;
@@ -13,31 +13,50 @@ interface SectionCProps {
     neck_bending_frequency: string;
     device_holding_position: string;
   };
-  onChange: (field: string, value: string | string[]) => void;
+  onChange: (
+    field: string,
+    value: string | string[] | Record<string, string>,
+  ) => void;
 }
 
 export function CVSSectionC({ data, onChange }: SectionCProps) {
   const strainReduction = [
-    'Anti-glare screen',
-    'Blue light filter glasses',
-    'Screen brightness adjusted',
-    'Adjusted workstation setup',
-    'None',
+    "Anti-glare screen",
+    "Blue light filter glasses",
+    "Screen brightness adjusted",
+    "Adjusted workstation setup",
+    "None",
   ];
 
-  const toggleStrainReduction = (item: string) => {
-    const updated = data.eye_strain_reduction.includes(item)
-      ? data.eye_strain_reduction.filter((i) => i !== item)
-      : [...data.eye_strain_reduction, item];
-    onChange('eye_strain_reduction', updated);
+  const setStrainReductionAnswer = (item: string, answer: "Yes" | "No") => {
+    const nextAnswers = {
+      ...data.eye_strain_reduction_answers,
+      [item]: answer,
+    };
+    onChange("eye_strain_reduction_answers", nextAnswers);
+    const currentValues = Array.isArray(data.eye_strain_reduction)
+      ? data.eye_strain_reduction
+      : [];
+    const updated =
+      answer === "Yes"
+        ? currentValues.includes(item)
+          ? currentValues
+          : [...currentValues, item]
+        : currentValues.filter((value) => value !== item);
+    onChange("eye_strain_reduction", updated);
   };
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-      <FormSectionHeader sectionTitle="Section C" sectionSubtitle="Ergonomics & Environment" />
+      <FormSectionHeader
+        sectionTitle="Section C"
+        sectionSubtitle="Ergonomics & Environment"
+      />
 
       <div className="bg-gray-50 px-4 md:px-6 py-3 md:py-4 border-b border-gray-200">
-        <h3 className="text-gray-700 md:text-gray-800 font-semibold text-sm md:text-base">Ergonomics & Environment</h3>
+        <h3 className="text-gray-700 md:text-gray-800 font-semibold text-sm md:text-base">
+          Ergonomics & Environment
+        </h3>
       </div>
 
       <div className="p-4 md:p-6 space-y-4 md:space-y-6">
@@ -46,19 +65,39 @@ export function CVSSectionC({ data, onChange }: SectionCProps) {
           questionText="Do you use any of the following to reduce eye strain?"
           isRequired
         >
-          <div className="space-y-3">
+          <div className="space-y-4">
             {strainReduction.map((item) => (
-              <div key={item} className="flex items-start space-x-3">
-                <input
-                  type="checkbox"
-                  id={item}
-                  checked={data.eye_strain_reduction.includes(item)}
-                  onChange={() => toggleStrainReduction(item)}
-                  className="w-5 h-5 cursor-pointer accent-purple-600 rounded mt-0.5 flex-shrink-0"
-                />
-                <label htmlFor={item} className="text-gray-700 cursor-pointer text-sm md:text-base">
+              <div
+                key={item}
+                className="rounded-lg border border-gray-200 p-3 md:p-4"
+              >
+                <div className="text-gray-800 font-medium text-sm md:text-base mb-3">
                   {item}
-                </label>
+                </div>
+                <div className="flex flex-wrap gap-4">
+                  <label className="inline-flex items-center gap-2 text-gray-700 text-sm md:text-base cursor-pointer">
+                    <input
+                      type="radio"
+                      name={`strain-${item}`}
+                      checked={
+                        data.eye_strain_reduction_answers[item] === "Yes"
+                      }
+                      onChange={() => setStrainReductionAnswer(item, "Yes")}
+                      className="w-5 h-5 cursor-pointer accent-purple-600"
+                    />
+                    Yes
+                  </label>
+                  <label className="inline-flex items-center gap-2 text-gray-700 text-sm md:text-base cursor-pointer">
+                    <input
+                      type="radio"
+                      name={`strain-${item}`}
+                      checked={data.eye_strain_reduction_answers[item] === "No"}
+                      onChange={() => setStrainReductionAnswer(item, "No")}
+                      className="w-5 h-5 cursor-pointer accent-purple-600"
+                    />
+                    No
+                  </label>
+                </div>
               </div>
             ))}
           </div>
@@ -76,11 +115,16 @@ export function CVSSectionC({ data, onChange }: SectionCProps) {
                 id="bright"
                 name="lighting"
                 value="Too bright"
-                checked={data.lighting_conditions === 'Too bright'}
-                onChange={(e) => onChange('lighting_conditions', e.target.value)}
+                checked={data.lighting_conditions === "Too bright"}
+                onChange={(e) =>
+                  onChange("lighting_conditions", e.target.value)
+                }
                 className="w-4 h-4 md:w-5 md:h-5 cursor-pointer accent-purple-600"
               />
-              <label htmlFor="bright" className="text-gray-700 cursor-pointer text-sm md:text-base">
+              <label
+                htmlFor="bright"
+                className="text-gray-700 cursor-pointer text-sm md:text-base"
+              >
                 Too bright
               </label>
             </div>
@@ -90,11 +134,16 @@ export function CVSSectionC({ data, onChange }: SectionCProps) {
                 id="appropriate"
                 name="lighting"
                 value="Appropriate"
-                checked={data.lighting_conditions === 'Appropriate'}
-                onChange={(e) => onChange('lighting_conditions', e.target.value)}
+                checked={data.lighting_conditions === "Appropriate"}
+                onChange={(e) =>
+                  onChange("lighting_conditions", e.target.value)
+                }
                 className="w-4 h-4 md:w-5 md:h-5 cursor-pointer accent-purple-600"
               />
-              <label htmlFor="appropriate" className="text-gray-700 cursor-pointer text-sm md:text-base">
+              <label
+                htmlFor="appropriate"
+                className="text-gray-700 cursor-pointer text-sm md:text-base"
+              >
                 Appropriate
               </label>
             </div>
@@ -104,11 +153,16 @@ export function CVSSectionC({ data, onChange }: SectionCProps) {
                 id="dim"
                 name="lighting"
                 value="Too dim"
-                checked={data.lighting_conditions === 'Too dim'}
-                onChange={(e) => onChange('lighting_conditions', e.target.value)}
+                checked={data.lighting_conditions === "Too dim"}
+                onChange={(e) =>
+                  onChange("lighting_conditions", e.target.value)
+                }
                 className="w-4 h-4 md:w-5 md:h-5 cursor-pointer accent-purple-600"
               />
-              <label htmlFor="dim" className="text-gray-700 cursor-pointer text-sm md:text-base">
+              <label
+                htmlFor="dim"
+                className="text-gray-700 cursor-pointer text-sm md:text-base"
+              >
                 Too dim
               </label>
             </div>
@@ -127,11 +181,14 @@ export function CVSSectionC({ data, onChange }: SectionCProps) {
                 id="eye-level"
                 name="screen_position"
                 value="At eye level"
-                checked={data.screen_position === 'At eye level'}
-                onChange={(e) => onChange('screen_position', e.target.value)}
+                checked={data.screen_position === "At eye level"}
+                onChange={(e) => onChange("screen_position", e.target.value)}
                 className="w-4 h-4 md:w-5 md:h-5 cursor-pointer accent-purple-600"
               />
-              <label htmlFor="eye-level" className="text-gray-700 cursor-pointer text-sm md:text-base">
+              <label
+                htmlFor="eye-level"
+                className="text-gray-700 cursor-pointer text-sm md:text-base"
+              >
                 At eye level
               </label>
             </div>
@@ -141,11 +198,14 @@ export function CVSSectionC({ data, onChange }: SectionCProps) {
                 id="above-level"
                 name="screen_position"
                 value="Above eye level"
-                checked={data.screen_position === 'Above eye level'}
-                onChange={(e) => onChange('screen_position', e.target.value)}
+                checked={data.screen_position === "Above eye level"}
+                onChange={(e) => onChange("screen_position", e.target.value)}
                 className="w-4 h-4 md:w-5 md:h-5 cursor-pointer accent-purple-600"
               />
-              <label htmlFor="above-level" className="text-gray-700 cursor-pointer text-sm md:text-base">
+              <label
+                htmlFor="above-level"
+                className="text-gray-700 cursor-pointer text-sm md:text-base"
+              >
                 Above eye level
               </label>
             </div>
@@ -155,11 +215,14 @@ export function CVSSectionC({ data, onChange }: SectionCProps) {
                 id="below-level"
                 name="screen_position"
                 value="Below eye level"
-                checked={data.screen_position === 'Below eye level'}
-                onChange={(e) => onChange('screen_position', e.target.value)}
+                checked={data.screen_position === "Below eye level"}
+                onChange={(e) => onChange("screen_position", e.target.value)}
                 className="w-4 h-4 md:w-5 md:h-5 cursor-pointer accent-purple-600"
               />
-              <label htmlFor="below-level" className="text-gray-700 cursor-pointer text-sm md:text-base">
+              <label
+                htmlFor="below-level"
+                className="text-gray-700 cursor-pointer text-sm md:text-base"
+              >
                 Below eye level
               </label>
             </div>
@@ -178,11 +241,14 @@ export function CVSSectionC({ data, onChange }: SectionCProps) {
                 id="upright"
                 name="sitting_posture"
                 value="Upright with back support"
-                checked={data.sitting_posture === 'Upright with back support'}
-                onChange={(e) => onChange('sitting_posture', e.target.value)}
+                checked={data.sitting_posture === "Upright with back support"}
+                onChange={(e) => onChange("sitting_posture", e.target.value)}
                 className="w-4 h-4 md:w-5 md:h-5 cursor-pointer accent-purple-600"
               />
-              <label htmlFor="upright" className="text-gray-700 cursor-pointer text-sm md:text-base">
+              <label
+                htmlFor="upright"
+                className="text-gray-700 cursor-pointer text-sm md:text-base"
+              >
                 Upright with back support
               </label>
             </div>
@@ -192,11 +258,14 @@ export function CVSSectionC({ data, onChange }: SectionCProps) {
                 id="bent-forward"
                 name="sitting_posture"
                 value="Slightly bent forward"
-                checked={data.sitting_posture === 'Slightly bent forward'}
-                onChange={(e) => onChange('sitting_posture', e.target.value)}
+                checked={data.sitting_posture === "Slightly bent forward"}
+                onChange={(e) => onChange("sitting_posture", e.target.value)}
                 className="w-4 h-4 md:w-5 md:h-5 cursor-pointer accent-purple-600"
               />
-              <label htmlFor="bent-forward" className="text-gray-700 cursor-pointer text-sm md:text-base">
+              <label
+                htmlFor="bent-forward"
+                className="text-gray-700 cursor-pointer text-sm md:text-base"
+              >
                 Slightly bent forward
               </label>
             </div>
@@ -206,11 +275,14 @@ export function CVSSectionC({ data, onChange }: SectionCProps) {
                 id="slouching"
                 name="sitting_posture"
                 value="Frequently slouching"
-                checked={data.sitting_posture === 'Frequently slouching'}
-                onChange={(e) => onChange('sitting_posture', e.target.value)}
+                checked={data.sitting_posture === "Frequently slouching"}
+                onChange={(e) => onChange("sitting_posture", e.target.value)}
                 className="w-4 h-4 md:w-5 md:h-5 cursor-pointer accent-purple-600"
               />
-              <label htmlFor="slouching" className="text-gray-700 cursor-pointer text-sm md:text-base">
+              <label
+                htmlFor="slouching"
+                className="text-gray-700 cursor-pointer text-sm md:text-base"
+              >
                 Frequently slouching
               </label>
             </div>
@@ -220,11 +292,14 @@ export function CVSSectionC({ data, onChange }: SectionCProps) {
                 id="lying"
                 name="sitting_posture"
                 value="Lying down / reclining"
-                checked={data.sitting_posture === 'Lying down / reclining'}
-                onChange={(e) => onChange('sitting_posture', e.target.value)}
+                checked={data.sitting_posture === "Lying down / reclining"}
+                onChange={(e) => onChange("sitting_posture", e.target.value)}
                 className="w-4 h-4 md:w-5 md:h-5 cursor-pointer accent-purple-600"
               />
-              <label htmlFor="lying" className="text-gray-700 cursor-pointer text-sm md:text-base">
+              <label
+                htmlFor="lying"
+                className="text-gray-700 cursor-pointer text-sm md:text-base"
+              >
                 Lying down / reclining
               </label>
             </div>
@@ -243,11 +318,14 @@ export function CVSSectionC({ data, onChange }: SectionCProps) {
                 id="always"
                 name="chair_support"
                 value="Always"
-                checked={data.chair_support === 'Always'}
-                onChange={(e) => onChange('chair_support', e.target.value)}
+                checked={data.chair_support === "Always"}
+                onChange={(e) => onChange("chair_support", e.target.value)}
                 className="w-4 h-4 md:w-5 md:h-5 cursor-pointer accent-purple-600"
               />
-              <label htmlFor="always" className="text-gray-700 cursor-pointer text-sm md:text-base">
+              <label
+                htmlFor="always"
+                className="text-gray-700 cursor-pointer text-sm md:text-base"
+              >
                 Always
               </label>
             </div>
@@ -257,11 +335,14 @@ export function CVSSectionC({ data, onChange }: SectionCProps) {
                 id="sometimes"
                 name="chair_support"
                 value="Sometimes"
-                checked={data.chair_support === 'Sometimes'}
-                onChange={(e) => onChange('chair_support', e.target.value)}
+                checked={data.chair_support === "Sometimes"}
+                onChange={(e) => onChange("chair_support", e.target.value)}
                 className="w-4 h-4 md:w-5 md:h-5 cursor-pointer accent-purple-600"
               />
-              <label htmlFor="sometimes" className="text-gray-700 cursor-pointer text-sm md:text-base">
+              <label
+                htmlFor="sometimes"
+                className="text-gray-700 cursor-pointer text-sm md:text-base"
+              >
                 Sometimes
               </label>
             </div>
@@ -271,11 +352,14 @@ export function CVSSectionC({ data, onChange }: SectionCProps) {
                 id="never"
                 name="chair_support"
                 value="Never"
-                checked={data.chair_support === 'Never'}
-                onChange={(e) => onChange('chair_support', e.target.value)}
+                checked={data.chair_support === "Never"}
+                onChange={(e) => onChange("chair_support", e.target.value)}
                 className="w-4 h-4 md:w-5 md:h-5 cursor-pointer accent-purple-600"
               />
-              <label htmlFor="never" className="text-gray-700 cursor-pointer text-sm md:text-base">
+              <label
+                htmlFor="never"
+                className="text-gray-700 cursor-pointer text-sm md:text-base"
+              >
                 Never
               </label>
             </div>
@@ -294,11 +378,16 @@ export function CVSSectionC({ data, onChange }: SectionCProps) {
                 id="neck-never"
                 name="neck_bending"
                 value="Never"
-                checked={data.neck_bending_frequency === 'Never'}
-                onChange={(e) => onChange('neck_bending_frequency', e.target.value)}
+                checked={data.neck_bending_frequency === "Never"}
+                onChange={(e) =>
+                  onChange("neck_bending_frequency", e.target.value)
+                }
                 className="w-4 h-4 md:w-5 md:h-5 cursor-pointer accent-purple-600"
               />
-              <label htmlFor="neck-never" className="text-gray-700 cursor-pointer text-sm md:text-base">
+              <label
+                htmlFor="neck-never"
+                className="text-gray-700 cursor-pointer text-sm md:text-base"
+              >
                 Never
               </label>
             </div>
@@ -308,11 +397,16 @@ export function CVSSectionC({ data, onChange }: SectionCProps) {
                 id="neck-occasionally"
                 name="neck_bending"
                 value="Occasionally"
-                checked={data.neck_bending_frequency === 'Occasionally'}
-                onChange={(e) => onChange('neck_bending_frequency', e.target.value)}
+                checked={data.neck_bending_frequency === "Occasionally"}
+                onChange={(e) =>
+                  onChange("neck_bending_frequency", e.target.value)
+                }
                 className="w-4 h-4 md:w-5 md:h-5 cursor-pointer accent-purple-600"
               />
-              <label htmlFor="neck-occasionally" className="text-gray-700 cursor-pointer text-sm md:text-base">
+              <label
+                htmlFor="neck-occasionally"
+                className="text-gray-700 cursor-pointer text-sm md:text-base"
+              >
                 Occasionally
               </label>
             </div>
@@ -322,11 +416,16 @@ export function CVSSectionC({ data, onChange }: SectionCProps) {
                 id="neck-frequently"
                 name="neck_bending"
                 value="Frequently"
-                checked={data.neck_bending_frequency === 'Frequently'}
-                onChange={(e) => onChange('neck_bending_frequency', e.target.value)}
+                checked={data.neck_bending_frequency === "Frequently"}
+                onChange={(e) =>
+                  onChange("neck_bending_frequency", e.target.value)
+                }
                 className="w-4 h-4 md:w-5 md:h-5 cursor-pointer accent-purple-600"
               />
-              <label htmlFor="neck-frequently" className="text-gray-700 cursor-pointer text-sm md:text-base">
+              <label
+                htmlFor="neck-frequently"
+                className="text-gray-700 cursor-pointer text-sm md:text-base"
+              >
                 Frequently
               </label>
             </div>
@@ -336,11 +435,16 @@ export function CVSSectionC({ data, onChange }: SectionCProps) {
                 id="neck-always"
                 name="neck_bending"
                 value="Always"
-                checked={data.neck_bending_frequency === 'Always'}
-                onChange={(e) => onChange('neck_bending_frequency', e.target.value)}
+                checked={data.neck_bending_frequency === "Always"}
+                onChange={(e) =>
+                  onChange("neck_bending_frequency", e.target.value)
+                }
                 className="w-4 h-4 md:w-5 md:h-5 cursor-pointer accent-purple-600"
               />
-              <label htmlFor="neck-always" className="text-gray-700 cursor-pointer text-sm md:text-base">
+              <label
+                htmlFor="neck-always"
+                className="text-gray-700 cursor-pointer text-sm md:text-base"
+              >
                 Always
               </label>
             </div>
@@ -359,11 +463,16 @@ export function CVSSectionC({ data, onChange }: SectionCProps) {
                 id="device-hand"
                 name="device_position"
                 value="Held in hand"
-                checked={data.device_holding_position === 'Held in hand'}
-                onChange={(e) => onChange('device_holding_position', e.target.value)}
+                checked={data.device_holding_position === "Held in hand"}
+                onChange={(e) =>
+                  onChange("device_holding_position", e.target.value)
+                }
                 className="w-4 h-4 md:w-5 md:h-5 cursor-pointer accent-purple-600"
               />
-              <label htmlFor="device-hand" className="text-gray-700 cursor-pointer text-sm md:text-base">
+              <label
+                htmlFor="device-hand"
+                className="text-gray-700 cursor-pointer text-sm md:text-base"
+              >
                 Held in hand
               </label>
             </div>
@@ -373,11 +482,16 @@ export function CVSSectionC({ data, onChange }: SectionCProps) {
                 id="device-table"
                 name="device_position"
                 value="Placed on table"
-                checked={data.device_holding_position === 'Placed on table'}
-                onChange={(e) => onChange('device_holding_position', e.target.value)}
+                checked={data.device_holding_position === "Placed on table"}
+                onChange={(e) =>
+                  onChange("device_holding_position", e.target.value)
+                }
                 className="w-4 h-4 md:w-5 md:h-5 cursor-pointer accent-purple-600"
               />
-              <label htmlFor="device-table" className="text-gray-700 cursor-pointer text-sm md:text-base">
+              <label
+                htmlFor="device-table"
+                className="text-gray-700 cursor-pointer text-sm md:text-base"
+              >
                 Placed on table
               </label>
             </div>
@@ -387,11 +501,16 @@ export function CVSSectionC({ data, onChange }: SectionCProps) {
                 id="device-both"
                 name="device_position"
                 value="Both equally"
-                checked={data.device_holding_position === 'Both equally'}
-                onChange={(e) => onChange('device_holding_position', e.target.value)}
+                checked={data.device_holding_position === "Both equally"}
+                onChange={(e) =>
+                  onChange("device_holding_position", e.target.value)
+                }
                 className="w-4 h-4 md:w-5 md:h-5 cursor-pointer accent-purple-600"
               />
-              <label htmlFor="device-both" className="text-gray-700 cursor-pointer text-sm md:text-base">
+              <label
+                htmlFor="device-both"
+                className="text-gray-700 cursor-pointer text-sm md:text-base"
+              >
                 Both equally
               </label>
             </div>

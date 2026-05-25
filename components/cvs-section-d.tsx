@@ -1,27 +1,30 @@
+"use client";
 
-'use client';
-
-import { FormSectionHeader, FormQuestion } from './form-section-header';
-import { Input } from '@/components/ui/input';
+import { Input } from "@/components/ui/input";
+import { FormQuestion, FormSectionHeader } from "./form-section-header";
 
 interface SectionDProps {
   data: {
     eye_conditions: string[];
+    eye_conditions_answers: Record<string, "" | "Yes" | "No">;
     corrective_lenses: string;
     device_use_before_sleep: string;
     sleep_hours: string;
     eye_drops_usage: string;
     eye_drops_frequency: string;
   };
-  onChange: (field: string, value: string | string[]) => void;
+  onChange: (
+    field: string,
+    value: string | string[] | Record<string, string>,
+  ) => void;
 }
 
 const EYE_CONDITIONS = [
-  'Dry eye disease',
-  'History of any Past eye surgeries',
-  'Migraine',
-  'Chronic headache disorders',
-  'None'
+  "Dry eye disease",
+  "History of any Past eye surgeries",
+  "Migraine",
+  "Chronic headache disorders",
+  "None",
 ];
 
 export function CVSSectionD({ data, onChange }: SectionDProps) {
@@ -32,12 +35,36 @@ export function CVSSectionD({ data, onChange }: SectionDProps) {
 
     if (currentConditions.includes(condition)) {
       onChange(
-        'eye_conditions',
-        currentConditions.filter((c) => c !== condition)
+        "eye_conditions",
+        currentConditions.filter((c) => c !== condition),
       );
     } else {
-      onChange('eye_conditions', [...currentConditions, condition]);
+      onChange("eye_conditions", [...currentConditions, condition]);
     }
+  };
+
+  const setEyeConditionAnswer = (condition: string, answer: "Yes" | "No") => {
+    const nextAnswers = { ...data.eye_conditions_answers, [condition]: answer };
+    onChange("eye_conditions_answers", nextAnswers);
+
+    if (answer === "Yes") {
+      const currentConditions = Array.isArray(data.eye_conditions)
+        ? data.eye_conditions
+        : [];
+
+      if (!currentConditions.includes(condition)) {
+        onChange("eye_conditions", [...currentConditions, condition]);
+      }
+      return;
+    }
+
+    const currentConditions = Array.isArray(data.eye_conditions)
+      ? data.eye_conditions
+      : [];
+    onChange(
+      "eye_conditions",
+      currentConditions.filter((c) => c !== condition),
+    );
   };
 
   return (
@@ -59,26 +86,37 @@ export function CVSSectionD({ data, onChange }: SectionDProps) {
           questionText="Do you have any of the following eye conditions or factors? (Pre-diagnosed)"
           isRequired
         >
-          <div className="space-y-3">
+          <div className="space-y-4">
             {EYE_CONDITIONS.map((condition) => (
-              <div key={condition} className="flex items-start space-x-3">
-                <input
-                  type="checkbox"
-                  id={`condition-${condition}`}
-                  checked={
-                    Array.isArray(data.eye_conditions) &&
-                    data.eye_conditions.includes(condition)
-                  }
-                  onChange={() => toggleEyeCondition(condition)}
-                  className="w-5 h-5 cursor-pointer accent-purple-600 rounded mt-0.5 flex-shrink-0"
-                />
-
-                <label
-                  htmlFor={`condition-${condition}`}
-                  className="text-gray-700 cursor-pointer text-sm md:text-base"
-                >
+              <div
+                key={condition}
+                className="rounded-lg border border-gray-200 p-3 md:p-4"
+              >
+                <div className="text-gray-800 font-medium text-sm md:text-base mb-3">
                   {condition}
-                </label>
+                </div>
+                <div className="flex flex-wrap gap-4">
+                  <label className="inline-flex items-center gap-2 text-gray-700 text-sm md:text-base cursor-pointer">
+                    <input
+                      type="radio"
+                      name={`condition-${condition}`}
+                      checked={data.eye_conditions_answers[condition] === "Yes"}
+                      onChange={() => setEyeConditionAnswer(condition, "Yes")}
+                      className="w-5 h-5 cursor-pointer accent-purple-600"
+                    />
+                    Yes
+                  </label>
+                  <label className="inline-flex items-center gap-2 text-gray-700 text-sm md:text-base cursor-pointer">
+                    <input
+                      type="radio"
+                      name={`condition-${condition}`}
+                      checked={data.eye_conditions_answers[condition] === "No"}
+                      onChange={() => setEyeConditionAnswer(condition, "No")}
+                      className="w-5 h-5 cursor-pointer accent-purple-600"
+                    />
+                    No
+                  </label>
+                </div>
               </div>
             ))}
           </div>
@@ -90,7 +128,7 @@ export function CVSSectionD({ data, onChange }: SectionDProps) {
           isRequired
         >
           <div className="space-y-3">
-            {['Yes', 'Sometimes', 'No'].map((option) => (
+            {["Yes", "Sometimes", "No"].map((option) => (
               <div key={option} className="flex items-center space-x-3">
                 <input
                   type="radio"
@@ -99,7 +137,7 @@ export function CVSSectionD({ data, onChange }: SectionDProps) {
                   value={option}
                   checked={data.corrective_lenses === option}
                   onChange={(e) =>
-                    onChange('corrective_lenses', e.target.value)
+                    onChange("corrective_lenses", e.target.value)
                   }
                   className="w-5 h-5 cursor-pointer accent-purple-600"
                 />
@@ -121,7 +159,7 @@ export function CVSSectionD({ data, onChange }: SectionDProps) {
           isRequired
         >
           <div className="space-y-3">
-            {['<5', '5-6', '6-7', '7-8', '>8'].map((option) => (
+            {["<5", "5-6", "6-7", "7-8", ">8"].map((option) => (
               <div key={option} className="flex items-center space-x-3">
                 <input
                   type="radio"
@@ -129,7 +167,7 @@ export function CVSSectionD({ data, onChange }: SectionDProps) {
                   name="sleep_hours"
                   value={option}
                   checked={data.sleep_hours === option}
-                  onChange={(e) => onChange('sleep_hours', e.target.value)}
+                  onChange={(e) => onChange("sleep_hours", e.target.value)}
                   className="w-5 h-5 cursor-pointer accent-purple-600"
                 />
 
@@ -150,7 +188,7 @@ export function CVSSectionD({ data, onChange }: SectionDProps) {
           isRequired
         >
           <div className="space-y-3">
-            {['Always', 'Sometimes', 'Never'].map((option) => (
+            {["Always", "Sometimes", "Never"].map((option) => (
               <div key={option} className="flex items-center space-x-3">
                 <input
                   type="radio"
@@ -159,7 +197,7 @@ export function CVSSectionD({ data, onChange }: SectionDProps) {
                   value={option}
                   checked={data.device_use_before_sleep === option}
                   onChange={(e) =>
-                    onChange('device_use_before_sleep', e.target.value)
+                    onChange("device_use_before_sleep", e.target.value)
                   }
                   className="w-5 h-5 cursor-pointer accent-purple-600"
                 />
@@ -181,7 +219,7 @@ export function CVSSectionD({ data, onChange }: SectionDProps) {
           isRequired
         >
           <div className="space-y-3">
-            {['Yes', 'No'].map((option) => (
+            {["Yes", "No"].map((option) => (
               <div key={option} className="flex items-center space-x-3">
                 <input
                   type="radio"
@@ -189,9 +227,7 @@ export function CVSSectionD({ data, onChange }: SectionDProps) {
                   name="eye_drops_usage"
                   value={option}
                   checked={data.eye_drops_usage === option}
-                  onChange={(e) =>
-                    onChange('eye_drops_usage', e.target.value)
-                  }
+                  onChange={(e) => onChange("eye_drops_usage", e.target.value)}
                   className="w-5 h-5 cursor-pointer accent-purple-600"
                 />
 
@@ -206,7 +242,7 @@ export function CVSSectionD({ data, onChange }: SectionDProps) {
           </div>
         </FormQuestion>
 
-        {data.eye_drops_usage === 'Yes' && (
+        {data.eye_drops_usage === "Yes" && (
           <FormQuestion
             questionNumber="21.1"
             questionText="If yes frequency"
@@ -216,9 +252,7 @@ export function CVSSectionD({ data, onChange }: SectionDProps) {
               type="text"
               placeholder="Your answer"
               value={data.eye_drops_frequency}
-              onChange={(e) =>
-                onChange('eye_drops_frequency', e.target.value)
-              }
+              onChange={(e) => onChange("eye_drops_frequency", e.target.value)}
               className="w-full border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-purple-600 p-2 md:p-3 text-sm md:text-base"
             />
           </FormQuestion>

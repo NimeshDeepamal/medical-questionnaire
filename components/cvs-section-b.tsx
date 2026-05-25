@@ -6,6 +6,7 @@ import { FormQuestion, FormSectionHeader } from "./form-section-header";
 interface SectionBProps {
   data: {
     digital_devices: string[];
+    digital_devices_answers: Record<string, "" | "Yes" | "No">;
     digital_devices_other: string;
     average_screen_time: string;
     consecutive_hours: string;
@@ -13,16 +14,40 @@ interface SectionBProps {
     regular_breaks: string;
     breaks_frequency: string;
   };
-  onChange: (field: string, value: string | string[]) => void;
+  onChange: (
+    field: string,
+    value: string | string[] | Record<string, string>,
+  ) => void;
 }
 
 export function CVSSectionB({ data, onChange }: SectionBProps) {
   const devices = ["Desktop", "Laptop", "Tablet", "Smartphone", "Other"];
+  const screenTimeOptions = [
+    "< 2 hours",
+    "2-4 hours",
+    "5-7 hours",
+    "8-10 hours",
+  ];
 
   const toggleDevice = (device: string) => {
     const updated = data.digital_devices.includes(device)
       ? data.digital_devices.filter((d) => d !== device)
       : [...data.digital_devices, device];
+    onChange("digital_devices", updated);
+  };
+  const setDeviceAnswer = (device: string, answer: "Yes" | "No") => {
+    const nextAnswers = { ...data.digital_devices_answers, [device]: answer };
+    onChange("digital_devices_answers", nextAnswers);
+
+    const currentDevices = Array.isArray(data.digital_devices)
+      ? data.digital_devices
+      : [];
+    const updated =
+      answer === "Yes"
+        ? currentDevices.includes(device)
+          ? currentDevices
+          : [...currentDevices, device]
+        : currentDevices.filter((value) => value !== device);
     onChange("digital_devices", updated);
   };
 
@@ -45,27 +70,40 @@ export function CVSSectionB({ data, onChange }: SectionBProps) {
           questionText="What type(s) of digital devices do you use regularly? (You may select more than one option)"
           isRequired
         >
-          <div className="space-y-2 md:space-y-3">
+          <div className="space-y-4">
             {devices.map((device) => (
-              <div key={device}>
-                <div className="flex items-center space-x-2 md:space-x-3">
-                  <input
-                    type="checkbox"
-                    id={device}
-                    checked={data.digital_devices.includes(device)}
-                    onChange={() => toggleDevice(device)}
-                    className="w-4 h-4 md:w-5 md:h-5 cursor-pointer accent-purple-600 rounded"
-                  />
-                  <label
-                    htmlFor={device}
-                    className="text-gray-700 cursor-pointer text-sm md:text-base"
-                  >
-                    {device}
+              <div
+                key={device}
+                className="rounded-lg border border-gray-200 p-3 md:p-4"
+              >
+                <div className="text-gray-800 font-medium text-sm md:text-base mb-3">
+                  {device}
+                </div>
+                <div className="flex flex-wrap gap-4">
+                  <label className="inline-flex items-center gap-2 text-gray-700 text-sm md:text-base cursor-pointer">
+                    <input
+                      type="radio"
+                      name={`device-${device}`}
+                      checked={data.digital_devices_answers[device] === "Yes"}
+                      onChange={() => setDeviceAnswer(device, "Yes")}
+                      className="w-5 h-5 cursor-pointer accent-purple-600"
+                    />
+                    Yes
+                  </label>
+                  <label className="inline-flex items-center gap-2 text-gray-700 text-sm md:text-base cursor-pointer">
+                    <input
+                      type="radio"
+                      name={`device-${device}`}
+                      checked={data.digital_devices_answers[device] === "No"}
+                      onChange={() => setDeviceAnswer(device, "No")}
+                      className="w-5 h-5 cursor-pointer accent-purple-600"
+                    />
+                    No
                   </label>
                 </div>
                 {device === "Other" &&
-                  data.digital_devices.includes("Other") && (
-                    <div className="mt-2 md:mt-3 ml-6 md:ml-8">
+                  data.digital_devices_answers[device] === "Yes" && (
+                    <div className="mt-3">
                       <Input
                         type="text"
                         placeholder="Please specify..."
@@ -88,7 +126,7 @@ export function CVSSectionB({ data, onChange }: SectionBProps) {
           isRequired
         >
           <div className="space-y-3">
-            {['< 2 hours', '2-4 hours', '5-7 hours', '8-10 hours'].map((opt) => (
+            {screenTimeOptions.map((opt) => (
               <div key={opt} className="flex items-center space-x-3">
                 <input
                   type="radio"
@@ -96,10 +134,15 @@ export function CVSSectionB({ data, onChange }: SectionBProps) {
                   name="average_screen_time"
                   value={opt}
                   checked={data.average_screen_time === opt}
-                  onChange={(e) => onChange('average_screen_time', e.target.value)}
+                  onChange={(e) =>
+                    onChange("average_screen_time", e.target.value)
+                  }
                   className="w-5 h-5 cursor-pointer accent-purple-600"
                 />
-                <label htmlFor={`avg-${opt}`} className="text-gray-700 cursor-pointer text-base">
+                <label
+                  htmlFor={`avg-${opt}`}
+                  className="text-gray-700 cursor-pointer text-base"
+                >
                   {opt}
                 </label>
               </div>
@@ -307,46 +350,46 @@ export function CVSSectionB({ data, onChange }: SectionBProps) {
                   value={data.breaks_frequency}
                   onChange={(e) => onChange("breaks_frequency", e.target.value)}
                   className="border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-purple-600"
-                  />
-                </div>
-              )}
-              <div className="flex items-center space-x-3">
-                <input
-                  type="radio"
-                  id="breaks-sometimes"
-                  name="regular_breaks"
-                  value="Sometimes"
-                  checked={data.regular_breaks === "Sometimes"}
-                  onChange={(e) => onChange("regular_breaks", e.target.value)}
-                  className="w-5 h-5 cursor-pointer accent-purple-600"
                 />
-                <label
-                  htmlFor="breaks-sometimes"
-                  className="text-gray-700 cursor-pointer text-base"
-                >
-                  Sometimes
-                </label>
               </div>
-              <div className="flex items-center space-x-3">
-                <input
-                  type="radio"
-                  id="breaks-never"
-                  name="regular_breaks"
-                  value="Never"
-                  checked={data.regular_breaks === "Never"}
-                  onChange={(e) => onChange("regular_breaks", e.target.value)}
-                  className="w-5 h-5 cursor-pointer accent-purple-600"
-                />
-                <label
-                  htmlFor="breaks-never"
-                  className="text-gray-700 cursor-pointer text-base"
-                >
-                  Never
-                </label>
-              </div>
+            )}
+            <div className="flex items-center space-x-3">
+              <input
+                type="radio"
+                id="breaks-sometimes"
+                name="regular_breaks"
+                value="Sometimes"
+                checked={data.regular_breaks === "Sometimes"}
+                onChange={(e) => onChange("regular_breaks", e.target.value)}
+                className="w-5 h-5 cursor-pointer accent-purple-600"
+              />
+              <label
+                htmlFor="breaks-sometimes"
+                className="text-gray-700 cursor-pointer text-base"
+              >
+                Sometimes
+              </label>
             </div>
-          </FormQuestion>
-        </div>
+            <div className="flex items-center space-x-3">
+              <input
+                type="radio"
+                id="breaks-never"
+                name="regular_breaks"
+                value="Never"
+                checked={data.regular_breaks === "Never"}
+                onChange={(e) => onChange("regular_breaks", e.target.value)}
+                className="w-5 h-5 cursor-pointer accent-purple-600"
+              />
+              <label
+                htmlFor="breaks-never"
+                className="text-gray-700 cursor-pointer text-base"
+              >
+                Never
+              </label>
+            </div>
+          </div>
+        </FormQuestion>
       </div>
-    );
+    </div>
+  );
 }
