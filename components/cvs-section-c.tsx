@@ -17,9 +17,14 @@ interface SectionCProps {
     field: string,
     value: string | string[] | Record<string, string>,
   ) => void;
+  showValidationErrors?: boolean;
 }
 
-export function CVSSectionC({ data, onChange }: SectionCProps) {
+export function CVSSectionC({
+  data,
+  onChange,
+  showValidationErrors = false,
+}: SectionCProps) {
   const strainReduction = [
     "Anti-glare screen",
     "Blue light filter glasses",
@@ -64,6 +69,12 @@ export function CVSSectionC({ data, onChange }: SectionCProps) {
           questionNumber="10."
           questionText="Do you use any of the following to reduce eye strain?"
           isRequired
+          hasError={
+            showValidationErrors &&
+            !Object.values(data.eye_strain_reduction_answers).every(
+              (value) => value === "Yes" || value === "No",
+            )
+          }
         >
           <div className="space-y-4">
             {strainReduction.map((item) => (
@@ -107,6 +118,7 @@ export function CVSSectionC({ data, onChange }: SectionCProps) {
           questionNumber="11."
           questionText="How would you describe your lighting conditions during screen use?"
           isRequired
+          hasError={showValidationErrors && !data.lighting_conditions}
         >
           <div className="space-y-2 md:space-y-3">
             <div className="flex items-center space-x-2 md:space-x-3">
@@ -173,6 +185,7 @@ export function CVSSectionC({ data, onChange }: SectionCProps) {
           questionNumber="12."
           questionText="Is your screen positioned?"
           isRequired
+          hasError={showValidationErrors && !data.screen_position}
         >
           <div className="space-y-2 md:space-y-3">
             <div className="flex items-center space-x-2 md:space-x-3">
@@ -233,6 +246,7 @@ export function CVSSectionC({ data, onChange }: SectionCProps) {
           questionNumber="13."
           questionText="How would you describe your usual sitting posture while using digital devices?"
           isRequired
+          hasError={showValidationErrors && !data.sitting_posture}
         >
           <div className="space-y-2 md:space-y-3">
             <div className="flex items-center space-x-2 md:space-x-3">
@@ -310,6 +324,7 @@ export function CVSSectionC({ data, onChange }: SectionCProps) {
           questionNumber="14."
           questionText="Do you use a chair with adequate back support while using a digital device?"
           isRequired
+          hasError={showValidationErrors && !data.chair_support}
         >
           <div className="space-y-2 md:space-y-3">
             <div className="flex items-center space-x-2 md:space-x-3">
@@ -370,6 +385,7 @@ export function CVSSectionC({ data, onChange }: SectionCProps) {
           questionNumber="15."
           questionText="Do you bend your neck downward while using digital devices?"
           isRequired
+          hasError={showValidationErrors && !data.neck_bending_frequency}
         >
           <div className="space-y-2 md:space-y-3">
             <div className="flex items-center space-x-2 md:space-x-3">
@@ -455,6 +471,7 @@ export function CVSSectionC({ data, onChange }: SectionCProps) {
           questionNumber="16."
           questionText="How do you usually hold or place your digital device during use?"
           isRequired
+          hasError={showValidationErrors && !data.device_holding_position}
         >
           <div className="space-y-2 md:space-y-3">
             <div className="flex items-center space-x-2 md:space-x-3">

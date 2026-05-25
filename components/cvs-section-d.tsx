@@ -17,6 +17,7 @@ interface SectionDProps {
     field: string,
     value: string | string[] | Record<string, string>,
   ) => void;
+  showValidationErrors?: boolean;
 }
 
 const EYE_CONDITIONS = [
@@ -27,7 +28,11 @@ const EYE_CONDITIONS = [
   "None",
 ];
 
-export function CVSSectionD({ data, onChange }: SectionDProps) {
+export function CVSSectionD({
+  data,
+  onChange,
+  showValidationErrors = false,
+}: SectionDProps) {
   const toggleEyeCondition = (condition: string) => {
     const currentConditions = Array.isArray(data.eye_conditions)
       ? data.eye_conditions
@@ -85,6 +90,12 @@ export function CVSSectionD({ data, onChange }: SectionDProps) {
           questionNumber="17."
           questionText="Do you have any of the following eye conditions or factors? (Pre-diagnosed)"
           isRequired
+          hasError={
+            showValidationErrors &&
+            !Object.values(data.eye_conditions_answers).every(
+              (value) => value === "Yes" || value === "No",
+            )
+          }
         >
           <div className="space-y-4">
             {EYE_CONDITIONS.map((condition) => (
@@ -126,6 +137,7 @@ export function CVSSectionD({ data, onChange }: SectionDProps) {
           questionNumber="18."
           questionText="Do you wear corrective lenses? (or spectacles)"
           isRequired
+          hasError={showValidationErrors && !data.corrective_lenses}
         >
           <div className="space-y-3">
             {["Yes", "Sometimes", "No"].map((option) => (
@@ -157,6 +169,7 @@ export function CVSSectionD({ data, onChange }: SectionDProps) {
           questionNumber="19."
           questionText="How many hours of sleep do you get on average per night?"
           isRequired
+          hasError={showValidationErrors && !data.sleep_hours}
         >
           <div className="space-y-3">
             {["<5", "5-6", "6-7", "7-8", ">8"].map((option) => (
@@ -186,6 +199,7 @@ export function CVSSectionD({ data, onChange }: SectionDProps) {
           questionNumber="20."
           questionText="Do you use your devices for a long time just before sleeping at night?"
           isRequired
+          hasError={showValidationErrors && !data.device_use_before_sleep}
         >
           <div className="space-y-3">
             {["Always", "Sometimes", "Never"].map((option) => (
@@ -217,6 +231,7 @@ export function CVSSectionD({ data, onChange }: SectionDProps) {
           questionNumber="21."
           questionText="Do you use any eye drops such as: artificial tears regularly?"
           isRequired
+          hasError={showValidationErrors && !data.eye_drops_usage}
         >
           <div className="space-y-3">
             {["Yes", "No"].map((option) => (
@@ -247,13 +262,18 @@ export function CVSSectionD({ data, onChange }: SectionDProps) {
             questionNumber="21.1"
             questionText="If yes frequency"
             isRequired
+            hasError={showValidationErrors && !data.eye_drops_frequency}
           >
             <Input
               type="text"
               placeholder="Your answer"
               value={data.eye_drops_frequency}
               onChange={(e) => onChange("eye_drops_frequency", e.target.value)}
-              className="w-full border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-purple-600 p-2 md:p-3 text-sm md:text-base"
+              className={`w-full border rounded focus:outline-none focus:ring-2 focus:ring-purple-600 p-2 md:p-3 text-sm md:text-base ${
+                showValidationErrors && !data.eye_drops_frequency
+                  ? "border-red-400 focus:ring-red-500"
+                  : "border-gray-300"
+              }`}
             />
           </FormQuestion>
         )}

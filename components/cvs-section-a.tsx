@@ -11,9 +11,14 @@ interface SectionAProps {
     academic_year: string;
   };
   onChange: (field: string, value: string) => void;
+  showValidationErrors?: boolean;
 }
 
-export function CVSSectionA({ data, onChange }: SectionAProps) {
+export function CVSSectionA({
+  data,
+  onChange,
+  showValidationErrors = false,
+}: SectionAProps) {
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200">
       <FormSectionHeader
@@ -28,7 +33,12 @@ export function CVSSectionA({ data, onChange }: SectionAProps) {
       </div>
 
       <div className="p-4 md:p-6 space-y-4 md:space-y-6">
-        <FormQuestion questionNumber="1." questionText="Age" isRequired>
+        <FormQuestion
+          questionNumber="1."
+          questionText="Age"
+          isRequired
+          hasError={showValidationErrors && !data.age}
+        >
           <Input
             type="text"
             placeholder="Your answer"
@@ -38,7 +48,12 @@ export function CVSSectionA({ data, onChange }: SectionAProps) {
           />
         </FormQuestion>
 
-        <FormQuestion questionNumber="2." questionText="Gender" isRequired>
+        <FormQuestion
+          questionNumber="2."
+          questionText="Gender"
+          isRequired
+          hasError={showValidationErrors && !data.gender}
+        >
           <div className="space-y-2 md:space-y-3">
             <div className="flex items-center space-x-2 md:space-x-3">
               <input
@@ -81,6 +96,7 @@ export function CVSSectionA({ data, onChange }: SectionAProps) {
           questionNumber="3."
           questionText="Faculty of study"
           isRequired
+          hasError={showValidationErrors && !data.faculty_of_study}
         >
           <div className="space-y-3">
             <div className="flex items-center space-x-3">
@@ -141,6 +157,7 @@ export function CVSSectionA({ data, onChange }: SectionAProps) {
           questionNumber="4."
           questionText="Academic year"
           isRequired
+          hasError={showValidationErrors && !data.academic_year}
         >
           <div className="space-y-3">
             {["1st year", "2nd year", "3rd year", "4th year"].map((yr) => (

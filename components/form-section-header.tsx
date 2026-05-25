@@ -19,6 +19,7 @@ interface FormQuestionProps {
   questionText: string;
   isRequired?: boolean;
   points?: number;
+  hasError?: boolean;
   children: React.ReactNode;
 }
 
@@ -27,12 +28,21 @@ export function FormQuestion({
   questionText,
   isRequired = false,
   points,
+  hasError = false,
   children,
 }: FormQuestionProps) {
   return (
-    <div className="bg-white border border-gray-200 px-4 md:px-6 py-3 md:py-5 mb-3 md:mb-4 rounded-lg">
+    <div
+      className={`px-4 md:px-6 py-3 md:py-5 mb-3 md:mb-4 rounded-lg border ${
+        hasError ? "border-red-300 bg-red-50/60" : "border-gray-200 bg-white"
+      }`}
+    >
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-3 md:mb-4 gap-2">
-        <label className="text-base md:text-lg font-medium text-gray-800">
+        <label
+          className={`text-base md:text-lg font-medium ${
+            hasError ? "text-red-700" : "text-gray-800"
+          }`}
+        >
           <span>{questionNumber}</span>
           <span className="ml-1 md:ml-2">{questionText}</span>
           {isRequired && <span className="text-red-500 ml-1">*</span>}
@@ -55,6 +65,10 @@ interface SubtitleProps {
 
 export function FormSubtitle({ text, className = "" }: SubtitleProps) {
   return (
-    <p className={`text-gray-700 text-sm md:text-base mb-4 md:mb-6 ${className}`}>{text}</p>
+    <p
+      className={`text-gray-700 text-sm md:text-base mb-4 md:mb-6 ${className}`}
+    >
+      {text}
+    </p>
   );
 }

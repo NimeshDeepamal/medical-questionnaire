@@ -88,6 +88,14 @@ export default function Home() {
     "landing" | "start" | "a" | "b" | "c" | "symptoms" | "d" | "e" | "results"
   >("landing");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [validationErrors, setValidationErrors] = useState({
+    a: false,
+    b: false,
+    c: false,
+    d: false,
+    symptoms: false,
+    e: false,
+  });
 
   const [formData, setFormData] = useState({
     age: "",
@@ -147,12 +155,7 @@ export default function Home() {
   const validateSection = (section: string): boolean => {
     const requiredFields: Record<string, string[]> = {
       a: ["age", "gender", "faculty_of_study"],
-      b: [
-        "digital_devices",
-        "consecutive_hours",
-        "screen_viewing_distance",
-        "regular_breaks",
-      ],
+      b: ["consecutive_hours", "screen_viewing_distance", "regular_breaks"],
       c: [
         "lighting_conditions",
         "screen_position",
@@ -199,6 +202,14 @@ export default function Home() {
     if (
       section === "b" &&
       !isAnswerMapComplete(formData.digital_devices_answers)
+    ) {
+      return false;
+    }
+
+    if (
+      section === "b" &&
+      formData.digital_devices_answers.Other === "Yes" &&
+      !formData.digital_devices_other
     ) {
       return false;
     }
@@ -409,7 +420,11 @@ export default function Home() {
 
         {currentSection === "a" && (
           <div className="space-y-6">
-            <CVSSectionA data={formData} onChange={handleFieldChange} />
+            <CVSSectionA
+              data={formData}
+              onChange={handleFieldChange}
+              showValidationErrors={validationErrors.a}
+            />
             <div className="flex justify-between gap-4 mt-8">
               <Button
                 onClick={() => setCurrentSection("start")}
@@ -420,8 +435,10 @@ export default function Home() {
               <Button
                 onClick={() => {
                   if (validateSection("a")) {
+                    setValidationErrors((prev) => ({ ...prev, a: false }));
                     setCurrentSection("b");
                   } else {
+                    setValidationErrors((prev) => ({ ...prev, a: true }));
                     alert("Please fill all required fields in this section");
                   }
                 }}
@@ -435,7 +452,11 @@ export default function Home() {
 
         {currentSection === "b" && (
           <div className="space-y-6">
-            <CVSSectionB data={formData} onChange={handleFieldChange} />
+            <CVSSectionB
+              data={formData}
+              onChange={handleFieldChange}
+              showValidationErrors={validationErrors.b}
+            />
             <div className="flex justify-between gap-4 mt-8">
               <Button onClick={() => setCurrentSection("a")} variant="outline">
                 Back
@@ -443,8 +464,10 @@ export default function Home() {
               <Button
                 onClick={() => {
                   if (validateSection("b")) {
+                    setValidationErrors((prev) => ({ ...prev, b: false }));
                     setCurrentSection("c");
                   } else {
+                    setValidationErrors((prev) => ({ ...prev, b: true }));
                     alert("Please fill all required fields in this section");
                   }
                 }}
@@ -458,7 +481,11 @@ export default function Home() {
 
         {currentSection === "c" && (
           <div className="space-y-6">
-            <CVSSectionC data={formData} onChange={handleFieldChange} />
+            <CVSSectionC
+              data={formData}
+              onChange={handleFieldChange}
+              showValidationErrors={validationErrors.c}
+            />
             <div className="flex justify-between gap-4 mt-8">
               <Button onClick={() => setCurrentSection("b")} variant="outline">
                 Back
@@ -466,8 +493,10 @@ export default function Home() {
               <Button
                 onClick={() => {
                   if (validateSection("c")) {
+                    setValidationErrors((prev) => ({ ...prev, c: false }));
                     setCurrentSection("d");
                   } else {
+                    setValidationErrors((prev) => ({ ...prev, c: true }));
                     alert("Please fill all required fields in this section");
                   }
                 }}
@@ -481,7 +510,11 @@ export default function Home() {
 
         {currentSection === "d" && (
           <div className="space-y-6">
-            <CVSSectionD data={formData} onChange={handleFieldChange} />
+            <CVSSectionD
+              data={formData}
+              onChange={handleFieldChange}
+              showValidationErrors={validationErrors.d}
+            />
             <div className="flex justify-between gap-4 mt-8">
               <Button onClick={() => setCurrentSection("c")} variant="outline">
                 Back
@@ -489,8 +522,10 @@ export default function Home() {
               <Button
                 onClick={() => {
                   if (validateSection("d")) {
+                    setValidationErrors((prev) => ({ ...prev, d: false }));
                     setCurrentSection("symptoms");
                   } else {
+                    setValidationErrors((prev) => ({ ...prev, d: true }));
                     alert("Please fill all required fields in this section");
                   }
                 }}
@@ -515,6 +550,7 @@ export default function Home() {
                 handleFieldChange("visual_symptoms", symptoms)
               }
               onScoreChange={() => {}}
+              showValidationErrors={validationErrors.symptoms}
             />
 
             <CVSSymptomsSection
@@ -528,6 +564,7 @@ export default function Home() {
                 handleFieldChange("ocular_surface_symptoms", symptoms)
               }
               onScoreChange={() => {}}
+              showValidationErrors={validationErrors.symptoms}
             />
 
             <CVSSymptomsSection
@@ -541,6 +578,7 @@ export default function Home() {
                 handleFieldChange("extra_ocular_symptoms", symptoms)
               }
               onScoreChange={() => {}}
+              showValidationErrors={validationErrors.symptoms}
             />
 
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-6">
@@ -704,8 +742,16 @@ export default function Home() {
               <Button
                 onClick={() => {
                   if (validateSection("symptoms")) {
+                    setValidationErrors((prev) => ({
+                      ...prev,
+                      symptoms: false,
+                    }));
                     setCurrentSection("e");
                   } else {
+                    setValidationErrors((prev) => ({
+                      ...prev,
+                      symptoms: true,
+                    }));
                     alert("Please fill all required fields in this section");
                   }
                 }}
@@ -718,7 +764,11 @@ export default function Home() {
         )}
         {currentSection === "e" && (
           <div className="space-y-6">
-            <CVSSectionE data={formData} onChange={handleFieldChange} />
+            <CVSSectionE
+              data={formData}
+              onChange={handleFieldChange}
+              showValidationErrors={validationErrors.e}
+            />
 
             <div className="flex justify-between gap-4 mt-8">
               <Button
@@ -731,11 +781,13 @@ export default function Home() {
               <Button
                 onClick={async () => {
                   if (validateSection("e")) {
+                    setValidationErrors((prev) => ({ ...prev, e: false }));
                     const saved = await handleSubmit();
                     if (saved) {
                       setCurrentSection("results");
                     }
                   } else {
+                    setValidationErrors((prev) => ({ ...prev, e: true }));
                     alert("Please fill all required fields in this section");
                   }
                 }}

@@ -18,9 +18,14 @@ interface SectionBProps {
     field: string,
     value: string | string[] | Record<string, string>,
   ) => void;
+  showValidationErrors?: boolean;
 }
 
-export function CVSSectionB({ data, onChange }: SectionBProps) {
+export function CVSSectionB({
+  data,
+  onChange,
+  showValidationErrors = false,
+}: SectionBProps) {
   const devices = ["Desktop", "Laptop", "Tablet", "Smartphone", "Other"];
   const screenTimeOptions = [
     "< 2 hours",
@@ -69,6 +74,12 @@ export function CVSSectionB({ data, onChange }: SectionBProps) {
           questionNumber="5."
           questionText="What type(s) of digital devices do you use regularly? (You may select more than one option)"
           isRequired
+          hasError={
+            showValidationErrors &&
+            !Object.values(data.digital_devices_answers).every(
+              (value) => value === "Yes" || value === "No",
+            )
+          }
         >
           <div className="space-y-4">
             {devices.map((device) => (
@@ -111,7 +122,11 @@ export function CVSSectionB({ data, onChange }: SectionBProps) {
                         onChange={(e) =>
                           onChange("digital_devices_other", e.target.value)
                         }
-                        className="border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-purple-600"
+                        className={`border rounded focus:outline-none focus:ring-2 focus:ring-purple-600 ${
+                          showValidationErrors && !data.digital_devices_other
+                            ? "border-red-400 focus:ring-red-500"
+                            : "border-gray-300"
+                        }`}
                       />
                     </div>
                   )}
@@ -124,6 +139,7 @@ export function CVSSectionB({ data, onChange }: SectionBProps) {
           questionNumber="6."
           questionText="What's your average screen time per day?(all devices)"
           isRequired
+          hasError={showValidationErrors && !data.average_screen_time}
         >
           <div className="space-y-3">
             {screenTimeOptions.map((opt) => (
@@ -154,6 +170,7 @@ export function CVSSectionB({ data, onChange }: SectionBProps) {
           questionNumber="7."
           questionText="For work/study, how many consecutive hours do you spend looking at screens without a break?"
           isRequired
+          hasError={showValidationErrors && !data.consecutive_hours}
         >
           <div className="space-y-3">
             <div className="flex items-center space-x-3">
@@ -231,6 +248,7 @@ export function CVSSectionB({ data, onChange }: SectionBProps) {
           questionNumber="8."
           questionText="What is your typical screen viewing distance?"
           isRequired
+          hasError={showValidationErrors && !data.screen_viewing_distance}
         >
           <div className="space-y-3">
             <div className="flex items-center space-x-3">
@@ -316,6 +334,12 @@ export function CVSSectionB({ data, onChange }: SectionBProps) {
           questionNumber="9."
           questionText="How often do you take breaks during screen use?"
           isRequired
+          hasError={
+            showValidationErrors &&
+            (!data.regular_breaks ||
+              (data.regular_breaks === "Yes frequently" &&
+                !data.breaks_frequency))
+          }
         >
           <div className="space-y-3">
             <div className="flex items-center space-x-3">
@@ -349,7 +373,13 @@ export function CVSSectionB({ data, onChange }: SectionBProps) {
                   placeholder="Enter frequency"
                   value={data.breaks_frequency}
                   onChange={(e) => onChange("breaks_frequency", e.target.value)}
-                  className="border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-purple-600"
+                  className={`border rounded focus:outline-none focus:ring-2 focus:ring-purple-600 ${
+                    showValidationErrors &&
+                    data.regular_breaks === "Yes frequently" &&
+                    !data.breaks_frequency
+                      ? "border-red-400 focus:ring-red-500"
+                      : "border-gray-300"
+                  }`}
                 />
               </div>
             )}

@@ -9,6 +9,7 @@ interface SectionEProps {
     changed_study_habits: string; // Keep this for the visible question
   };
   onChange: (field: string, value: string | string[]) => void;
+  showValidationErrors?: boolean;
 }
 
 const STUDY_HABIT_CHANGES = [
@@ -17,7 +18,11 @@ const STUDY_HABIT_CHANGES = [
   "Changed lighting setup",
 ];
 
-export function CVSSectionE({ data, onChange }: SectionEProps) {
+export function CVSSectionE({
+  data,
+  onChange,
+  showValidationErrors = false,
+}: SectionEProps) {
   const toggleStudyHabitChange = (item: string) => {};
 
   return (
@@ -38,6 +43,7 @@ export function CVSSectionE({ data, onChange }: SectionEProps) {
           questionNumber="23."
           questionText="Do your symptoms affect your productivity?"
           isRequired
+          hasError={showValidationErrors && !data.productivity_impact}
         >
           <div className="space-y-2 md:space-y-3">
             {["Not at all", "Slightly", "Moderately", "Severely"].map(
@@ -74,6 +80,7 @@ export function CVSSectionE({ data, onChange }: SectionEProps) {
           questionNumber="24."
           questionText="Have you consulted an eye care professional for these symptoms?"
           isRequired
+          hasError={showValidationErrors && !data.consulted_eye_care}
         >
           <div className="space-y-2 md:space-y-3">
             {["Yes", "No"].map((option) => (
@@ -108,6 +115,7 @@ export function CVSSectionE({ data, onChange }: SectionEProps) {
           questionNumber="25."
           questionText="Have you changed your study habits due to CVS symptoms?"
           isRequired
+          hasError={showValidationErrors && !data.changed_study_habits}
         >
           <div className="space-y-2 md:space-y-3">
             {["Yes", "No"].map((option) => (
