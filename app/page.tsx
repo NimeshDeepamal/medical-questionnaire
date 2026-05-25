@@ -272,14 +272,14 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-50 py-4 px-2 md:py-8 md:px-4">
-      <div className="max-w-4xl mx-auto">
+    <main className="min-h-screen bg-gray-50 py-3 px-2 sm:py-4 sm:px-3 md:py-8 md:px-4">
+      <div className="max-w-4xl mx-auto w-full">
         {currentSection === "landing" && (
-          <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-4 md:p-8">
-            <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-4">
+          <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-4 sm:p-5 md:p-8">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-4 break-words">
               Computer Vision Syndrome (CVS) Research Questionnaire
             </h1>
-            <div className="space-y-4 md:space-y-6 text-gray-700 leading-relaxed text-sm md:text-base">
+            <div className="space-y-4 md:space-y-6 text-gray-700 leading-relaxed text-sm sm:text-[0.95rem] md:text-base">
               <p>
                 We are a group of undergraduate medical students from University
                 of Sri Jayewardenepura. We are conducting a research study on
@@ -369,8 +369,8 @@ export default function Home() {
         )}
 
         {currentSection === "start" && (
-          <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-4 md:p-8 text-center">
-            <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-3 md:mb-4">
+          <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-4 sm:p-5 md:p-8 text-center">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 md:mb-4 break-words">
               CVS Smart Questionnaire
             </h1>
             <p className="text-gray-600 text-sm md:text-lg mb-4 md:mb-6">
@@ -419,13 +419,13 @@ export default function Home() {
         )}
 
         {currentSection === "a" && (
-          <div className="space-y-6">
+          <div className="space-y-5 md:space-y-6">
             <CVSSectionA
               data={formData}
               onChange={handleFieldChange}
               showValidationErrors={validationErrors.a}
             />
-            <div className="flex justify-between gap-4 mt-8">
+            <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-4 mt-6 md:mt-8">
               <Button
                 onClick={() => setCurrentSection("start")}
                 variant="outline"
@@ -451,13 +451,13 @@ export default function Home() {
         )}
 
         {currentSection === "b" && (
-          <div className="space-y-6">
+          <div className="space-y-5 md:space-y-6">
             <CVSSectionB
               data={formData}
               onChange={handleFieldChange}
               showValidationErrors={validationErrors.b}
             />
-            <div className="flex justify-between gap-4 mt-8">
+            <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-4 mt-6 md:mt-8">
               <Button onClick={() => setCurrentSection("a")} variant="outline">
                 Back
               </Button>
@@ -480,13 +480,13 @@ export default function Home() {
         )}
 
         {currentSection === "c" && (
-          <div className="space-y-6">
+          <div className="space-y-5 md:space-y-6">
             <CVSSectionC
               data={formData}
               onChange={handleFieldChange}
               showValidationErrors={validationErrors.c}
             />
-            <div className="flex justify-between gap-4 mt-8">
+            <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-4 mt-6 md:mt-8">
               <Button onClick={() => setCurrentSection("b")} variant="outline">
                 Back
               </Button>
@@ -509,13 +509,13 @@ export default function Home() {
         )}
 
         {currentSection === "d" && (
-          <div className="space-y-6">
+          <div className="space-y-5 md:space-y-6">
             <CVSSectionD
               data={formData}
               onChange={handleFieldChange}
               showValidationErrors={validationErrors.d}
             />
-            <div className="flex justify-between gap-4 mt-8">
+            <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-4 mt-6 md:mt-8">
               <Button onClick={() => setCurrentSection("c")} variant="outline">
                 Back
               </Button>
@@ -538,7 +538,7 @@ export default function Home() {
         )}
 
         {currentSection === "symptoms" && (
-          <div className="space-y-6">
+          <div className="space-y-5 md:space-y-6">
             <CVSSymptomsSection
               sectionNumber={22.1}
               sectionTitle="Visual symptoms"

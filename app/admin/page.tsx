@@ -65,6 +65,12 @@ interface Questionnaire {
   productivity_impact: string | null;
   consulted_eye_care: string | null;
   changed_study_habits: string | null;
+  study_habit_changes_description: string | null;
+  study_habit_changes_list: string[];
+  study_habit_frequency: string | null;
+  study_habit_association: string | null;
+  study_habit_apply_frequency: string | null;
+  study_habit_help_level: string | null;
   total_score: number;
   submit_confirmation: boolean;
 }
@@ -410,6 +416,18 @@ export default function AdminDashboard() {
       productivity_impact: displayValue(submission.productivity_impact),
       consulted_eye_care: displayValue(submission.consulted_eye_care),
       changed_study_habits: displayValue(submission.changed_study_habits),
+      study_habit_changes_description: displayValue(
+        submission.study_habit_changes_description,
+      ),
+      study_habit_changes_list: displayArray(
+        submission.study_habit_changes_list,
+      ),
+      study_habit_frequency: displayValue(submission.study_habit_frequency),
+      study_habit_association: displayValue(submission.study_habit_association),
+      study_habit_apply_frequency: displayValue(
+        submission.study_habit_apply_frequency,
+      ),
+      study_habit_help_level: displayValue(submission.study_habit_help_level),
       total_score: submission.total_score,
       risk_level: getRiskLevel(submission.total_score),
       submit_confirmation: submission.submit_confirmation ? "Yes" : "No",
@@ -430,6 +448,13 @@ export default function AdminDashboard() {
     "5-7 hours",
     "8-10 hours",
   ];
+  const DIGITAL_DEVICE_OPTIONS = [
+    "Desktop",
+    "Laptop",
+    "Tablet",
+    "Smartphone",
+    "Other",
+  ];
   const STRAIN_REDUCTION_OPTIONS = [
     "Anti-glare screen",
     "Blue light filter glasses",
@@ -444,40 +469,6 @@ export default function AdminDashboard() {
     "Chronic headache disorders",
     "None",
   ];
-
-  const renderYesNoForSingle = (
-    selected?: string | null,
-    options?: string[],
-  ) => {
-    if (!options) return null;
-    return (
-      <div className="space-y-1 text-xs text-gray-700">
-        {options.map((opt) => (
-          <div key={opt} className="flex items-center space-x-2">
-            <div className="w-40 text-gray-700">{opt}</div>
-            <label className="flex items-center space-x-1">
-              <input
-                type="checkbox"
-                checked={selected === opt}
-                disabled
-                className="w-4 h-4"
-              />
-              <span className="text-xs text-gray-500">Yes</span>
-            </label>
-            <label className="flex items-center space-x-1">
-              <input
-                type="checkbox"
-                checked={selected !== opt}
-                disabled
-                className="w-4 h-4"
-              />
-              <span className="text-xs text-gray-500">No</span>
-            </label>
-          </div>
-        ))}
-      </div>
-    );
-  };
 
   const renderYesNoForMultiple = (
     selectedArr?: string[] | null,
@@ -518,6 +509,195 @@ export default function AdminDashboard() {
     );
   };
 
+  const analyticsCharts = useMemo(() => {
+    const buildSingleChoiceSeries = (
+      title: string,
+      subtitle: string,
+      getter: (submission: Questionnaire) => string | null | undefined,
+    ) => {
+      const counts = new Map<string, number>();
+      filteredSubmissions.forEach((submission) => {
+        const value = getter(submission)?.trim() || "Not answered";
+        counts.set(value, (counts.get(value) || 0) + 1);
+      });
+
+      return {
+        title,
+        subtitle,
+        data: Array.from(counts.entries()).map(([name, value]) => ({
+          name,
+          value,
+        })),
+      };
+    };
+
+    const buildMultiChoiceSeries = (
+      title: string,
+      subtitle: string,
+      getter: (submission: Questionnaire) => string[] | null | undefined,
+    ) => {
+      const counts = new Map<string, number>();
+      filteredSubmissions.forEach((submission) => {
+        const values = getter(submission) || [];
+        values.forEach((value) => {
+          counts.set(value, (counts.get(value) || 0) + 1);
+        });
+      });
+
+      return {
+        title,
+        subtitle,
+        data: Array.from(counts.entries()).map(([name, value]) => ({
+          name,
+          value,
+        })),
+      };
+    };
+
+    return [
+      buildSingleChoiceSeries(
+        "Gender",
+        "How many respondents selected each gender",
+        (submission) => submission.gender,
+      ),
+      buildSingleChoiceSeries(
+        "Faculty of Study",
+        "How many respondents came from each faculty",
+        (submission) => submission.faculty_of_study,
+      ),
+      buildSingleChoiceSeries(
+        "Academic Year",
+        "Distribution by academic year",
+        (submission) => submission.academic_year,
+      ),
+      buildMultiChoiceSeries(
+        "Digital Devices",
+        "How many people use each device type",
+        (submission) => submission.digital_devices,
+      ),
+      buildSingleChoiceSeries(
+        "Average Screen Time",
+        "Distribution of average screen time per day",
+        (submission) => submission.average_screen_time,
+      ),
+      buildSingleChoiceSeries(
+        "Consecutive Screen Hours",
+        "Hours spent without a break",
+        (submission) => submission.consecutive_hours,
+      ),
+      buildSingleChoiceSeries(
+        "Screen Viewing Distance",
+        "Typical viewing distance distribution",
+        (submission) => submission.screen_viewing_distance,
+      ),
+      buildSingleChoiceSeries(
+        "Regular Breaks",
+        "How often respondents take breaks",
+        (submission) => submission.regular_breaks,
+      ),
+      buildMultiChoiceSeries(
+        "Eye Strain Reduction",
+        "Methods used to reduce eye strain",
+        (submission) => submission.eye_strain_reduction,
+      ),
+      buildSingleChoiceSeries(
+        "Lighting Conditions",
+        "Lighting during screen use",
+        (submission) => submission.lighting_conditions,
+      ),
+      buildSingleChoiceSeries(
+        "Screen Position",
+        "Screen positioning preferences",
+        (submission) => submission.screen_position,
+      ),
+      buildSingleChoiceSeries(
+        "Sitting Posture",
+        "Usual sitting posture",
+        (submission) => submission.sitting_posture,
+      ),
+      buildSingleChoiceSeries(
+        "Chair Support",
+        "Use of chair back support",
+        (submission) => submission.chair_support,
+      ),
+      buildSingleChoiceSeries(
+        "Neck Bending Frequency",
+        "How often the neck is bent down",
+        (submission) => submission.neck_bending_frequency,
+      ),
+      buildSingleChoiceSeries(
+        "Device Holding Position",
+        "How devices are held during use",
+        (submission) => submission.device_holding_position,
+      ),
+      buildMultiChoiceSeries(
+        "Visual Symptoms",
+        "Counts for each visual symptom",
+        (submission) => submission.visual_symptoms,
+      ),
+      buildMultiChoiceSeries(
+        "Ocular Surface Symptoms",
+        "Counts for each ocular surface symptom",
+        (submission) => submission.ocular_surface_symptoms,
+      ),
+      buildMultiChoiceSeries(
+        "Extra-Ocular Symptoms",
+        "Counts for each extra-ocular symptom",
+        (submission) => submission.extra_ocular_symptoms,
+      ),
+      buildSingleChoiceSeries(
+        "Symptom Frequency",
+        "How often symptoms occur",
+        (submission) => submission.symptoms_frequency,
+      ),
+      buildSingleChoiceSeries(
+        "Screen-Time Association",
+        "Whether symptoms are linked to screen use",
+        (submission) => submission.associated_with_screen_use,
+      ),
+      buildMultiChoiceSeries(
+        "Eye Conditions",
+        "Pre-diagnosed eye conditions, including migraine",
+        (submission) => submission.eye_conditions,
+      ),
+      buildSingleChoiceSeries(
+        "Corrective Lenses",
+        "Use of corrective lenses",
+        (submission) => submission.corrective_lenses,
+      ),
+      buildSingleChoiceSeries(
+        "Device Use Before Sleep",
+        "Screen use before sleeping",
+        (submission) => submission.device_use_before_sleep,
+      ),
+      buildSingleChoiceSeries(
+        "Sleep Hours",
+        "Average sleep duration",
+        (submission) => submission.sleep_hours,
+      ),
+      buildSingleChoiceSeries(
+        "Eye Drops Usage",
+        "Regular eye-drop use",
+        (submission) => submission.eye_drops_usage,
+      ),
+      buildSingleChoiceSeries(
+        "Productivity Impact",
+        "How symptoms affect productivity",
+        (submission) => submission.productivity_impact,
+      ),
+      buildSingleChoiceSeries(
+        "Consulted Eye Care",
+        "Eye care consultation status",
+        (submission) => submission.consulted_eye_care,
+      ),
+      buildSingleChoiceSeries(
+        "Changed Study Habits",
+        "Whether study habits changed",
+        (submission) => submission.changed_study_habits,
+      ),
+    ];
+  }, [filteredSubmissions]);
+
   if (!isAuthenticated) {
     return (
       <div className="text-center">
@@ -528,33 +708,33 @@ export default function AdminDashboard() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
-        <div className="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center">
+    <main className="h-dvh bg-gray-50 flex flex-col overflow-hidden">
+      <header className="shrink-0 bg-white shadow-sm border-b border-gray-200">
+        <div className="flex flex-col gap-4 px-3 py-4 sm:px-4 lg:flex-row lg:justify-between lg:items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 break-words">
               CVS Submissions Dashboard
             </h1>
-            <p className="text-gray-600 mt-1">
+            <p className="text-sm sm:text-base text-gray-600 mt-1">
               View, export, and manage questionnaire submissions
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
             <Button
               onClick={exportToExcel}
-              className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white"
+              className="px-4 sm:px-6 py-2 bg-green-600 hover:bg-green-700 text-white"
             >
               Export Excel
             </Button>
             <Link href="/">
-              <Button variant="outline" className="px-6 py-2">
+              <Button variant="outline" className="px-4 sm:px-6 py-2">
                 Back to Form
               </Button>
             </Link>
             <Button
               onClick={handleLogout}
               variant="outline"
-              className="px-6 py-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+              className="px-4 sm:px-6 py-2 text-red-600 hover:text-red-700 hover:bg-red-50"
             >
               Logout
             </Button>
@@ -562,543 +742,640 @@ export default function AdminDashboard() {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
-        {stats && (
-          <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
-            <div className="bg-white rounded-lg shadow p-6 border border-gray-200">
-              <p className="text-gray-600 text-sm font-medium">
-                Total Submissions
-              </p>
-              <p className="text-3xl font-bold text-gray-900 mt-2">
-                {submissions.length}
-              </p>
-            </div>
-            <div className="bg-white rounded-lg shadow p-6 border border-gray-200">
-              <p className="text-gray-600 text-sm font-medium">Average Score</p>
-              <p className="text-3xl font-bold text-gray-900 mt-2">
-                {stats.avgScore}
-              </p>
-            </div>
-            <div className="bg-green-50 rounded-lg shadow p-6 border border-green-200">
-              <p className="text-green-700 text-sm font-medium">Normal</p>
-              <p className="text-3xl font-bold text-green-900 mt-2">
-                {stats.riskCounts["Normal subject"]}
-              </p>
-            </div>
-            <div className="bg-yellow-50 rounded-lg shadow p-6 border border-yellow-200">
-              <p className="text-yellow-700 text-sm font-medium">
-                Not CVS-case
-              </p>
-              <p className="text-3xl font-bold text-yellow-900 mt-2">
-                {stats.riskCounts["Not CVS-case"]}
-              </p>
-            </div>
-            <div className="bg-orange-50 rounded-lg shadow p-6 border border-orange-200">
-              <p className="text-orange-700 text-sm font-medium">
-                Low probability
-              </p>
-              <p className="text-3xl font-bold text-orange-900 mt-2">
-                {stats.riskCounts["Low probability"]}
-              </p>
-            </div>
-            <div className="bg-red-50 rounded-lg shadow p-6 border border-red-200">
-              <p className="text-red-700 text-sm font-medium">
-                High probability
-              </p>
-              <p className="text-3xl font-bold text-red-900 mt-2">
-                {stats.riskCounts["High probability"]}
-              </p>
-            </div>
-            <div className="bg-red-100 rounded-lg shadow p-6 border border-red-300">
-              <p className="text-red-700 text-sm font-medium">
-                Positive CVS-case
-              </p>
-              <p className="text-3xl font-bold text-red-900 mt-2">
-                {
-                  stats.riskCounts[
-                    "Positive CVS-case (CVS diagnosis is confirmed)"
-                  ]
-                }
-              </p>
-            </div>
-          </div>
-        )}
-
-        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-          <div className="bg-white rounded-lg shadow p-6 border border-gray-200">
-            <div className="mb-4">
-              <h2 className="text-xl font-semibold text-gray-900">
-                CVS-case distribution
-              </h2>
-              <p className="text-sm text-gray-600">
-                Pie chart of the current filtered submissions by risk level.
-              </p>
-            </div>
-            <div className="h-80">
-              {chartData.riskDistribution.length > 0 ? (
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={chartData.riskDistribution}
-                      dataKey="value"
-                      nameKey="name"
-                      cx="50%"
-                      cy="50%"
-                      outerRadius={110}
-                      innerRadius={55}
-                      paddingAngle={3}
-                    >
-                      {chartData.riskDistribution.map((entry, index) => (
-                        <Cell
-                          key={entry.name}
-                          fill={pieColors[index % pieColors.length]}
-                        />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                    <Legend />
-                  </PieChart>
-                </ResponsiveContainer>
-              ) : (
-                <div className="h-full flex items-center justify-center text-gray-500 text-sm border border-dashed border-gray-200 rounded-lg">
-                  No data for the selected filters.
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="bg-white rounded-lg shadow p-6 border border-gray-200">
-            <div className="mb-4">
-              <h2 className="text-xl font-semibold text-gray-900">
-                Average score by section
-              </h2>
-              <p className="text-sm text-gray-600">
-                Bar chart of average marks for the current filtered submissions.
-              </p>
-            </div>
-            <div className="h-80">
-              {chartData.sectionAverages.length > 0 ? (
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={chartData.sectionAverages}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis allowDecimals={false} />
-                    <Tooltip />
-                    <Bar dataKey="value" fill="#7c3aed" radius={[6, 6, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              ) : (
-                <div className="h-full flex items-center justify-center text-gray-500 text-sm border border-dashed border-gray-200 rounded-lg">
-                  No data for the selected filters.
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow p-6 border border-gray-200">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Search
-              </label>
-              <Input
-                type="text"
-                placeholder="Search by age, gender, faculty, symptoms, or devices..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full border border-gray-300 rounded"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Filter by Risk Level
-              </label>
-              <select
-                value={riskFilter}
-                onChange={(e) => setRiskFilter(e.target.value)}
-                className="w-full border border-gray-300 rounded px-3 py-2"
-              >
-                <option value="all">All Risk Levels</option>
-                <option value="Normal subject">Normal subject</option>
-                <option value="Not CVS-case">Not CVS-case</option>
-                <option value="Low probability">Low probability</option>
-                <option value="High probability">High probability</option>
-                <option value="Positive CVS-case (CVS diagnosis is confirmed)">
-                  Positive CVS-case (CVS diagnosis is confirmed)
-                </option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
-          {isLoading ? (
-            <div className="p-8 text-center text-gray-600">
-              <p>Loading submissions...</p>
-            </div>
-          ) : error ? (
-            <div className="p-8 text-center text-red-600">
-              <p>{error}</p>
-            </div>
-          ) : filteredSubmissions.length === 0 ? (
-            <div className="p-8 text-center text-gray-600">
-              <p>No submissions found</p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="bg-gray-50 border-b border-gray-200 sticky top-0 z-[1]">
-                  <tr>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">
-                      Created
-                    </th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">
-                      Age
-                    </th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">
-                      Gender
-                    </th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">
-                      Faculty
-                    </th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">
-                      Devices
-                    </th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">
-                      Symptom Frequency
-                    </th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">
-                      Screen Use Link
-                    </th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">
-                      Total
-                    </th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">
-                      Risk
-                    </th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">
-                      Section B
-                    </th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">
-                      Section C
-                    </th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">
-                      Symptoms
-                    </th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">
-                      Section D
-                    </th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">
-                      Section E
-                    </th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">
-                      Confirmation
-                    </th>
-                    <th className="px-4 py-3 text-left font-semibold text-gray-700">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {filteredSubmissions.map((submission) => {
-                    const risk = getRiskLevel(submission.total_score);
-                    const textColorClass = getRiskTextColor(
-                      submission.total_score,
-                    );
-                    const colorClasses = getRiskColor(submission.total_score);
-                    const created = new Date(
-                      submission.created_at,
-                    ).toLocaleString();
-                    const symptomsFrequencyScore =
-                      submission.symptoms_frequency === "Rare"
-                        ? 0
-                        : submission.symptoms_frequency === "Infrequent"
-                          ? 1
-                          : submission.symptoms_frequency === "Frequent"
-                            ? 3
-                            : 0;
-                    const screenTimeAssociationScore =
-                      submission.associated_with_screen_use === "Never"
-                        ? 0
-                        : submission.associated_with_screen_use === "Sometimes"
-                          ? 1
-                          : submission.associated_with_screen_use === "Always"
-                            ? 3
-                            : 0;
-
-                    return (
-                      <tr
-                        key={submission.id}
-                        className="align-top hover:bg-gray-50"
-                      >
-                        <td className="px-4 py-4 whitespace-nowrap text-gray-700">
-                          {created}
-                        </td>
-                        <td className="px-4 py-4 text-gray-700">
-                          {submission.age}
-                        </td>
-                        <td className="px-4 py-4 text-gray-700">
-                          {submission.gender}
-                        </td>
-                        <td className="px-4 py-4 text-gray-700">
-                          {submission.faculty_of_study}
-                        </td>
-                        <td className="px-4 py-4 text-gray-700">
-                          {displayArray(submission.digital_devices)}
-                        </td>
-                        <td className="px-4 py-4 text-gray-700">
-                          {symptomsFrequencyScore}
-                          <div className="text-xs text-gray-500 mt-1">
-                            {displayValue(submission.symptoms_frequency)}
-                          </div>
-                        </td>
-                        <td className="px-4 py-4 text-gray-700">
-                          {screenTimeAssociationScore}
-                          <div className="text-xs text-gray-500 mt-1">
-                            {displayValue(
-                              submission.associated_with_screen_use,
-                            )}
-                          </div>
-                        </td>
-                        <td className="px-4 py-4 text-gray-900 font-semibold">
-                          {submission.total_score}
-                        </td>
-                        <td className="px-4 py-4">
-                          <span
-                            className={`inline-flex px-3 py-1 rounded text-xs font-semibold ${textColorClass} ${colorClasses}`}
-                          >
-                            {risk}
-                          </span>
-                        </td>
-                        <td className="px-4 py-4 min-w-[220px] align-top">
-                          <div className="space-y-1 text-xs text-gray-700">
-                            <div>
-                              <span className="font-semibold">
-                                Other devices:
-                              </span>{" "}
-                              {displayValue(submission.digital_devices_other)}
-                            </div>
-                            <div>
-                              <span className="font-semibold">
-                                Consecutive hours:
-                              </span>{" "}
-                              {displayValue(submission.consecutive_hours)}
-                            </div>
-                            <div>
-                              <span className="font-semibold">
-                                Screen distance:
-                              </span>{" "}
-                              {displayValue(submission.screen_viewing_distance)}
-                            </div>
-                            <div>
-                              <span className="font-semibold">
-                                Average screen time:
-                              </span>
-                              <div className="mt-1">
-                                {renderYesNoForSingle(
-                                  submission.average_screen_time,
-                                  AVG_SCREEN_OPTIONS,
-                                )}
-                              </div>
-                            </div>
-                            <div>
-                              <span className="font-semibold">
-                                Regular breaks:
-                              </span>{" "}
-                              {displayValue(submission.regular_breaks)}
-                            </div>
-                            <div>
-                              <span className="font-semibold">
-                                Break frequency:
-                              </span>{" "}
-                              {displayValue(submission.breaks_frequency)}
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-4 py-4 min-w-[220px] align-top">
-                          <div className="space-y-1 text-xs text-gray-700">
-                            <div>
-                              <span className="font-semibold">
-                                Eye strain reduction:
-                              </span>
-                              <div className="mt-1">
-                                {renderYesNoForMultiple(
-                                  submission.eye_strain_reduction,
-                                  STRAIN_REDUCTION_OPTIONS,
-                                )}
-                              </div>
-                            </div>
-                            <div>
-                              <span className="font-semibold">Lighting:</span>{" "}
-                              {displayValue(submission.lighting_conditions)}
-                            </div>
-                            <div>
-                              <span className="font-semibold">
-                                Screen position:
-                              </span>{" "}
-                              {displayValue(submission.screen_position)}
-                            </div>
-                            <div>
-                              <span className="font-semibold">
-                                Sitting posture:
-                              </span>{" "}
-                              {displayValue(submission.sitting_posture)}
-                            </div>
-                            <div>
-                              <span className="font-semibold">
-                                Chair support:
-                              </span>{" "}
-                              {displayValue(submission.chair_support)}
-                            </div>
-                            <div>
-                              <span className="font-semibold">
-                                Neck bending:
-                              </span>{" "}
-                              {displayValue(submission.neck_bending_frequency)}
-                            </div>
-                            <div>
-                              <span className="font-semibold">
-                                Holding position:
-                              </span>{" "}
-                              {displayValue(submission.device_holding_position)}
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-4 py-4 min-w-[220px] align-top">
-                          <div className="space-y-1 text-xs text-gray-700">
-                            <div>
-                              <span className="font-semibold">
-                                Visual symptoms:
-                              </span>{" "}
-                              {displayArray(submission.visual_symptoms)}
-                            </div>
-                            <div>
-                              <span className="font-semibold">
-                                Visual score:
-                              </span>{" "}
-                              {submission.visual_symptoms_score}
-                            </div>
-                            <div>
-                              <span className="font-semibold">
-                                Ocular symptoms:
-                              </span>{" "}
-                              {displayArray(submission.ocular_surface_symptoms)}
-                            </div>
-                            <div>
-                              <span className="font-semibold">
-                                Ocular score:
-                              </span>{" "}
-                              {submission.ocular_surface_score}
-                            </div>
-                            <div>
-                              <span className="font-semibold">
-                                Extra-ocular symptoms:
-                              </span>{" "}
-                              {displayArray(submission.extra_ocular_symptoms)}
-                            </div>
-                            <div>
-                              <span className="font-semibold">
-                                Extra-ocular score:
-                              </span>{" "}
-                              {submission.extra_ocular_score}
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-4 py-4 min-w-[220px] align-top">
-                          <div className="space-y-1 text-xs text-gray-700">
-                            <div>
-                              <span className="font-semibold">
-                                Eye conditions:
-                              </span>
-                              <div className="mt-1">
-                                {renderYesNoForMultiple(
-                                  submission.eye_conditions,
-                                  EYE_CONDITIONS_OPTIONS,
-                                )}
-                              </div>
-                            </div>
-                            <div>
-                              <span className="font-semibold">
-                                Corrective lenses:
-                              </span>{" "}
-                              {displayValue(submission.corrective_lenses)}
-                            </div>
-                            <div>
-                              <span className="font-semibold">
-                                Before sleep:
-                              </span>{" "}
-                              {displayValue(submission.device_use_before_sleep)}
-                            </div>
-                            <div>
-                              <span className="font-semibold">
-                                Sleep hours:
-                              </span>{" "}
-                              {displayValue(submission.sleep_hours)}
-                            </div>
-                            <div>
-                              <span className="font-semibold">Eye drops:</span>{" "}
-                              {displayValue(submission.eye_drops_usage)}
-                            </div>
-                            <div>
-                              <span className="font-semibold">
-                                Eye drops freq:
-                              </span>{" "}
-                              {displayValue(submission.eye_drops_frequency)}
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-4 py-4 min-w-[220px] align-top">
-                          <div className="space-y-1 text-xs text-gray-700">
-                            <div>
-                              <span className="font-semibold">
-                                Productivity impact:
-                              </span>{" "}
-                              {displayValue(submission.productivity_impact)}
-                            </div>
-                            <div>
-                              <span className="font-semibold">
-                                Consulted eye care:
-                              </span>{" "}
-                              {displayValue(submission.consulted_eye_care)}
-                            </div>
-                            <div>
-                              <span className="font-semibold">
-                                Changed habits:
-                              </span>{" "}
-                              {displayValue(submission.changed_study_habits)}
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap align-top text-gray-700">
-                          {submission.submit_confirmation ? "Yes" : "No"}
-                        </td>
-                        <td className="px-4 py-4 whitespace-nowrap align-top">
-                          <Button
-                            onClick={() => handleDelete(submission.id)}
-                            disabled={deletingId === submission.id}
-                            variant="outline"
-                            className="border-red-200 text-red-700 hover:bg-red-50"
-                          >
-                            {deletingId === submission.id
-                              ? "Deleting..."
-                              : "Delete"}
-                          </Button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+      <div className="flex-1 min-h-0 overflow-y-auto">
+        <div className="max-w-7xl mx-auto w-full px-3 sm:px-4 py-4 sm:py-6 md:py-8 space-y-5 md:space-y-8">
+          {stats && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 md:gap-4">
+              <div className="bg-white rounded-lg shadow p-4 md:p-6 border border-gray-200">
+                <p className="text-gray-600 text-sm font-medium">
+                  Total Submissions
+                </p>
+                <p className="text-3xl font-bold text-gray-900 mt-2">
+                  {submissions.length}
+                </p>
+              </div>
+              <div className="bg-white rounded-lg shadow p-4 md:p-6 border border-gray-200">
+                <p className="text-gray-600 text-sm font-medium">
+                  Average Score
+                </p>
+                <p className="text-3xl font-bold text-gray-900 mt-2">
+                  {stats.avgScore}
+                </p>
+              </div>
+              <div className="bg-green-50 rounded-lg shadow p-4 md:p-6 border border-green-200">
+                <p className="text-green-700 text-sm font-medium">Normal</p>
+                <p className="text-3xl font-bold text-green-900 mt-2">
+                  {stats.riskCounts["Normal subject"]}
+                </p>
+              </div>
+              <div className="bg-yellow-50 rounded-lg shadow p-4 md:p-6 border border-yellow-200">
+                <p className="text-yellow-700 text-sm font-medium">
+                  Not CVS-case
+                </p>
+                <p className="text-3xl font-bold text-yellow-900 mt-2">
+                  {stats.riskCounts["Not CVS-case"]}
+                </p>
+              </div>
+              <div className="bg-orange-50 rounded-lg shadow p-4 md:p-6 border border-orange-200">
+                <p className="text-orange-700 text-sm font-medium">
+                  Low probability
+                </p>
+                <p className="text-3xl font-bold text-orange-900 mt-2">
+                  {stats.riskCounts["Low probability"]}
+                </p>
+              </div>
+              <div className="bg-red-50 rounded-lg shadow p-4 md:p-6 border border-red-200">
+                <p className="text-red-700 text-sm font-medium">
+                  High probability
+                </p>
+                <p className="text-3xl font-bold text-red-900 mt-2">
+                  {stats.riskCounts["High probability"]}
+                </p>
+              </div>
+              <div className="bg-red-100 rounded-lg shadow p-4 md:p-6 border border-red-300">
+                <p className="text-red-700 text-sm font-medium">
+                  Positive CVS-case
+                </p>
+                <p className="text-3xl font-bold text-red-900 mt-2">
+                  {
+                    stats.riskCounts[
+                      "Positive CVS-case (CVS diagnosis is confirmed)"
+                    ]
+                  }
+                </p>
+              </div>
             </div>
           )}
-        </div>
 
-        <div className="text-center text-gray-600 text-sm">
-          <p>
-            Showing {filteredSubmissions.length} of {submissions.length}{" "}
-            submissions
-          </p>
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 md:gap-6">
+            <div className="bg-white rounded-lg shadow p-4 sm:p-5 md:p-6 border border-gray-200">
+              <div className="mb-4">
+                <h2 className="text-xl font-semibold text-gray-900">
+                  CVS-case distribution
+                </h2>
+                <p className="text-sm text-gray-600">
+                  Pie chart of the current filtered submissions by risk level.
+                </p>
+              </div>
+              <div className="h-64 sm:h-72 md:h-80">
+                {chartData.riskDistribution.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={chartData.riskDistribution}
+                        dataKey="value"
+                        nameKey="name"
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={90}
+                        innerRadius={42}
+                        paddingAngle={3}
+                      >
+                        {chartData.riskDistribution.map((entry, index) => (
+                          <Cell
+                            key={entry.name}
+                            fill={pieColors[index % pieColors.length]}
+                          />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                      <Legend wrapperStyle={{ fontSize: "12px" }} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="h-full flex items-center justify-center text-gray-500 text-sm border border-dashed border-gray-200 rounded-lg">
+                    No data for the selected filters.
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow p-4 sm:p-5 md:p-6 border border-gray-200">
+              <div className="mb-4">
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Average score by section
+                </h2>
+                <p className="text-sm text-gray-600">
+                  Bar chart of average marks for the current filtered
+                  submissions.
+                </p>
+              </div>
+              <div className="h-64 sm:h-72 md:h-80">
+                {chartData.sectionAverages.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={chartData.sectionAverages}
+                      margin={{ top: 5, right: 10, left: 0, bottom: 5 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="name" />
+                      <YAxis allowDecimals={false} />
+                      <Tooltip />
+                      <Bar
+                        dataKey="value"
+                        fill="#7c3aed"
+                        radius={[6, 6, 0, 0]}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="h-full flex items-center justify-center text-gray-500 text-sm border border-dashed border-gray-200 rounded-lg">
+                    No data for the selected filters.
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {analyticsCharts.length > 0 && (
+            <div className="bg-white rounded-lg shadow p-4 sm:p-5 md:p-6 border border-gray-200">
+              <div className="mb-4">
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Response Insights
+                </h2>
+                <p className="text-sm text-gray-600">
+                  Distribution charts for questionnaire answers across the
+                  current filtered submissions.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
+                {analyticsCharts.map((chart, index) => {
+                  const color = sectionColors[index % sectionColors.length];
+
+                  return (
+                    <div
+                      key={chart.title}
+                      className="rounded-lg border border-gray-200 p-3 sm:p-4 md:p-5 bg-gray-50"
+                    >
+                      <div className="mb-3">
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          {chart.title}
+                        </h3>
+                        <p className="text-xs md:text-sm text-gray-600 mt-1">
+                          {chart.subtitle}
+                        </p>
+                      </div>
+
+                      <div className="h-64 sm:h-72 md:h-80">
+                        {chart.data.length > 0 ? (
+                          <ResponsiveContainer width="100%" height="100%">
+                            <BarChart
+                              data={chart.data}
+                              layout="vertical"
+                              margin={{
+                                top: 5,
+                                right: 10,
+                                left: 10,
+                                bottom: 5,
+                              }}
+                            >
+                              <CartesianGrid strokeDasharray="3 3" />
+                              <XAxis type="number" allowDecimals={false} />
+                              <YAxis
+                                type="category"
+                                dataKey="name"
+                                width={120}
+                                tick={{ fontSize: 11 }}
+                              />
+                              <Tooltip />
+                              <Bar
+                                dataKey="value"
+                                fill={color}
+                                radius={[0, 8, 8, 0]}
+                              />
+                            </BarChart>
+                          </ResponsiveContainer>
+                        ) : (
+                          <div className="h-full flex items-center justify-center text-gray-500 text-sm border border-dashed border-gray-200 rounded-lg bg-white">
+                            No data for the selected filters.
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          <div className="bg-white rounded-lg shadow p-4 sm:p-5 md:p-6 border border-gray-200">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Search
+                </label>
+                <Input
+                  type="text"
+                  placeholder="Search by age, gender, faculty, symptoms, or devices..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full border border-gray-300 rounded"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Filter by Risk Level
+                </label>
+                <select
+                  value={riskFilter}
+                  onChange={(e) => setRiskFilter(e.target.value)}
+                  className="w-full border border-gray-300 rounded px-3 py-2"
+                >
+                  <option value="all">All Risk Levels</option>
+                  <option value="Normal subject">Normal subject</option>
+                  <option value="Not CVS-case">Not CVS-case</option>
+                  <option value="Low probability">Low probability</option>
+                  <option value="High probability">High probability</option>
+                  <option value="Positive CVS-case (CVS diagnosis is confirmed)">
+                    Positive CVS-case (CVS diagnosis is confirmed)
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
+            {isLoading ? (
+              <div className="p-8 text-center text-gray-600">
+                <p>Loading submissions...</p>
+              </div>
+            ) : error ? (
+              <div className="p-8 text-center text-red-600">
+                <p>{error}</p>
+              </div>
+            ) : filteredSubmissions.length === 0 ? (
+              <div className="p-8 text-center text-gray-600">
+                <p>No submissions found</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-50 border-b border-gray-200 sticky top-0 z-[1]">
+                    <tr>
+                      <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                        Created
+                      </th>
+                      <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                        Age
+                      </th>
+                      <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                        Gender
+                      </th>
+                      <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                        Faculty
+                      </th>
+                      <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                        Devices
+                      </th>
+                      <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                        Symptom Frequency
+                      </th>
+                      <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                        Screen Use Link
+                      </th>
+                      <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                        Total
+                      </th>
+                      <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                        Risk
+                      </th>
+                      <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                        Section B
+                      </th>
+                      <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                        Section C
+                      </th>
+                      <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                        Symptoms
+                      </th>
+                      <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                        Section D
+                      </th>
+                      <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                        Section E
+                      </th>
+                      <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                        Confirmation
+                      </th>
+                      <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
+                    {filteredSubmissions.map((submission) => {
+                      const risk = getRiskLevel(submission.total_score);
+                      const textColorClass = getRiskTextColor(
+                        submission.total_score,
+                      );
+                      const colorClasses = getRiskColor(submission.total_score);
+                      const created = new Date(
+                        submission.created_at,
+                      ).toLocaleString();
+                      const symptomsFrequencyScore =
+                        submission.symptoms_frequency === "Rare"
+                          ? 0
+                          : submission.symptoms_frequency === "Infrequent"
+                            ? 1
+                            : submission.symptoms_frequency === "Frequent"
+                              ? 3
+                              : 0;
+                      const screenTimeAssociationScore =
+                        submission.associated_with_screen_use === "Never"
+                          ? 0
+                          : submission.associated_with_screen_use ===
+                              "Sometimes"
+                            ? 1
+                            : submission.associated_with_screen_use === "Always"
+                              ? 3
+                              : 0;
+
+                      return (
+                        <tr
+                          key={submission.id}
+                          className="align-top hover:bg-gray-50"
+                        >
+                          <td className="px-4 py-4 whitespace-nowrap text-gray-700">
+                            {created}
+                          </td>
+                          <td className="px-4 py-4 text-gray-700">
+                            {submission.age}
+                          </td>
+                          <td className="px-4 py-4 text-gray-700">
+                            {submission.gender}
+                          </td>
+                          <td className="px-4 py-4 text-gray-700">
+                            {submission.faculty_of_study}
+                          </td>
+                          <td className="px-4 py-4 text-gray-700">
+                            <div className="mt-1">
+                              {renderYesNoForMultiple(
+                                submission.digital_devices,
+                                DIGITAL_DEVICE_OPTIONS,
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-4 py-4 text-gray-700">
+                            {symptomsFrequencyScore}
+                            <div className="text-xs text-gray-500 mt-1">
+                              {displayValue(submission.symptoms_frequency)}
+                            </div>
+                          </td>
+                          <td className="px-4 py-4 text-gray-700">
+                            {screenTimeAssociationScore}
+                            <div className="text-xs text-gray-500 mt-1">
+                              {displayValue(
+                                submission.associated_with_screen_use,
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-4 py-4 text-gray-900 font-semibold">
+                            {submission.total_score}
+                          </td>
+                          <td className="px-4 py-4">
+                            <span
+                              className={`inline-flex px-3 py-1 rounded text-xs font-semibold ${textColorClass} ${colorClasses}`}
+                            >
+                              {risk}
+                            </span>
+                          </td>
+                          <td className="px-4 py-4 min-w-[220px] align-top">
+                            <div className="space-y-1 text-xs text-gray-700">
+                              <div>
+                                <span className="font-semibold">
+                                  Other devices:
+                                </span>{" "}
+                                {displayValue(submission.digital_devices_other)}
+                              </div>
+                              <div>
+                                <span className="font-semibold">
+                                  Consecutive hours:
+                                </span>{" "}
+                                {displayValue(submission.consecutive_hours)}
+                              </div>
+                              <div>
+                                <span className="font-semibold">
+                                  Screen distance:
+                                </span>{" "}
+                                {displayValue(
+                                  submission.screen_viewing_distance,
+                                )}
+                              </div>
+                              <div>
+                                <span className="font-semibold">
+                                  Average screen time:
+                                </span>
+                                {displayValue(submission.average_screen_time)}
+                              </div>
+                              <div>
+                                <span className="font-semibold">
+                                  Regular breaks:
+                                </span>{" "}
+                                {displayValue(submission.regular_breaks)}
+                              </div>
+                              <div>
+                                <span className="font-semibold">
+                                  Break frequency:
+                                </span>{" "}
+                                {displayValue(submission.breaks_frequency)}
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-4 py-4 min-w-[220px] align-top">
+                            <div className="space-y-1 text-xs text-gray-700">
+                              <div>
+                                <span className="font-semibold">
+                                  Eye strain reduction:
+                                </span>
+                                <div className="mt-1">
+                                  {renderYesNoForMultiple(
+                                    submission.eye_strain_reduction,
+                                    STRAIN_REDUCTION_OPTIONS,
+                                  )}
+                                </div>
+                              </div>
+                              <div>
+                                <span className="font-semibold">Lighting:</span>{" "}
+                                {displayValue(submission.lighting_conditions)}
+                              </div>
+                              <div>
+                                <span className="font-semibold">
+                                  Screen position:
+                                </span>{" "}
+                                {displayValue(submission.screen_position)}
+                              </div>
+                              <div>
+                                <span className="font-semibold">
+                                  Sitting posture:
+                                </span>{" "}
+                                {displayValue(submission.sitting_posture)}
+                              </div>
+                              <div>
+                                <span className="font-semibold">
+                                  Chair support:
+                                </span>{" "}
+                                {displayValue(submission.chair_support)}
+                              </div>
+                              <div>
+                                <span className="font-semibold">
+                                  Neck bending:
+                                </span>{" "}
+                                {displayValue(
+                                  submission.neck_bending_frequency,
+                                )}
+                              </div>
+                              <div>
+                                <span className="font-semibold">
+                                  Holding position:
+                                </span>{" "}
+                                {displayValue(
+                                  submission.device_holding_position,
+                                )}
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-4 py-4 min-w-[220px] align-top">
+                            <div className="space-y-1 text-xs text-gray-700">
+                              <div>
+                                <span className="font-semibold">
+                                  Visual symptoms:
+                                </span>{" "}
+                                {displayArray(submission.visual_symptoms)}
+                              </div>
+                              <div>
+                                <span className="font-semibold">
+                                  Visual score:
+                                </span>{" "}
+                                {submission.visual_symptoms_score}
+                              </div>
+                              <div>
+                                <span className="font-semibold">
+                                  Ocular symptoms:
+                                </span>{" "}
+                                {displayArray(
+                                  submission.ocular_surface_symptoms,
+                                )}
+                              </div>
+                              <div>
+                                <span className="font-semibold">
+                                  Ocular score:
+                                </span>{" "}
+                                {submission.ocular_surface_score}
+                              </div>
+                              <div>
+                                <span className="font-semibold">
+                                  Extra-ocular symptoms:
+                                </span>{" "}
+                                {displayArray(submission.extra_ocular_symptoms)}
+                              </div>
+                              <div>
+                                <span className="font-semibold">
+                                  Extra-ocular score:
+                                </span>{" "}
+                                {submission.extra_ocular_score}
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-4 py-4 min-w-[220px] align-top">
+                            <div className="space-y-1 text-xs text-gray-700">
+                              <div>
+                                <span className="font-semibold">
+                                  Eye conditions:
+                                </span>
+                                <div className="mt-1">
+                                  {renderYesNoForMultiple(
+                                    submission.eye_conditions,
+                                    EYE_CONDITIONS_OPTIONS,
+                                  )}
+                                </div>
+                              </div>
+                              <div>
+                                <span className="font-semibold">
+                                  Corrective lenses:
+                                </span>{" "}
+                                {displayValue(submission.corrective_lenses)}
+                              </div>
+                              <div>
+                                <span className="font-semibold">
+                                  Before sleep:
+                                </span>{" "}
+                                {displayValue(
+                                  submission.device_use_before_sleep,
+                                )}
+                              </div>
+                              <div>
+                                <span className="font-semibold">
+                                  Sleep hours:
+                                </span>{" "}
+                                {displayValue(submission.sleep_hours)}
+                              </div>
+                              <div>
+                                <span className="font-semibold">
+                                  Eye drops:
+                                </span>{" "}
+                                {displayValue(submission.eye_drops_usage)}
+                              </div>
+                              <div>
+                                <span className="font-semibold">
+                                  Eye drops freq:
+                                </span>{" "}
+                                {displayValue(submission.eye_drops_frequency)}
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-4 py-4 min-w-[220px] align-top">
+                            <div className="space-y-1 text-xs text-gray-700">
+                              <div>
+                                <span className="font-semibold">
+                                  Productivity impact:
+                                </span>{" "}
+                                {displayValue(submission.productivity_impact)}
+                              </div>
+                              <div>
+                                <span className="font-semibold">
+                                  Consulted eye care:
+                                </span>{" "}
+                                {displayValue(submission.consulted_eye_care)}
+                              </div>
+                              <div>
+                                <span className="font-semibold">
+                                  Changed habits:
+                                </span>{" "}
+                                {displayValue(submission.changed_study_habits)}
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-4 py-4 whitespace-nowrap align-top text-gray-700">
+                            {submission.submit_confirmation ? "Yes" : "No"}
+                          </td>
+                          <td className="px-4 py-4 whitespace-nowrap align-top">
+                            <Button
+                              onClick={() => handleDelete(submission.id)}
+                              disabled={deletingId === submission.id}
+                              variant="outline"
+                              className="border-red-200 text-red-700 hover:bg-red-50"
+                            >
+                              {deletingId === submission.id
+                                ? "Deleting..."
+                                : "Delete"}
+                            </Button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+
+          <div className="text-center text-gray-600 text-sm">
+            <p>
+              Showing {filteredSubmissions.length} of {submissions.length}{" "}
+              submissions
+            </p>
+          </div>
         </div>
       </div>
     </main>

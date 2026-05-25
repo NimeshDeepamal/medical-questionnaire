@@ -8,8 +8,10 @@ export function FormSectionHeader({
   sectionSubtitle,
 }: FormSectionHeaderProps) {
   return (
-    <div className="bg-purple-600 text-white px-4 md:px-6 py-3 md:py-4 rounded-t-lg">
-      <h2 className="text-xl md:text-2xl font-semibold">{sectionTitle}</h2>
+    <div className="bg-purple-600 text-white px-4 sm:px-5 md:px-6 py-3 md:py-4 rounded-t-lg">
+      <h2 className="text-lg sm:text-xl md:text-2xl font-semibold leading-tight break-words">
+        {sectionTitle}
+      </h2>
     </div>
   );
 }
@@ -33,13 +35,13 @@ export function FormQuestion({
 }: FormQuestionProps) {
   return (
     <div
-      className={`px-4 md:px-6 py-3 md:py-5 mb-3 md:mb-4 rounded-lg border ${
+      className={`px-4 sm:px-5 md:px-6 py-3 md:py-5 mb-3 md:mb-4 rounded-lg border ${
         hasError ? "border-red-300 bg-red-50/60" : "border-gray-200 bg-white"
       }`}
     >
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-3 md:mb-4 gap-2">
         <label
-          className={`text-base md:text-lg font-medium ${
+          className={`text-sm sm:text-base md:text-lg font-medium leading-snug break-words ${
             hasError ? "text-red-700" : "text-gray-800"
           }`}
         >
