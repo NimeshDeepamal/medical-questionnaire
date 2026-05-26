@@ -1,6 +1,16 @@
 import { getDb } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
+async function ensureQuestionnaireColumns() {
+  const db = getDb();
+
+  await db.query(`
+    alter table public.questionnaires
+      add column if not exists academic_year text,
+      add column if not exists average_screen_time text
+  `);
+}
+
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json();
@@ -63,7 +73,7 @@ export async function POST(request: NextRequest) {
         $11, $12, $13, $14, $15, $16, $17, $18, $19, $20,
         $21, $22, $23, $24, $25, $26, $27, $28, $29, $30,
         $31, $32, $33, $34, $35, $36, $37, $38, $39, $40,
-        $41, $42
+        $41, $42, $43
       )
       returning *
     `;
@@ -114,7 +124,16 @@ export async function POST(request: NextRequest) {
       true,
     ];
 
+    await ensureQuestionnaireColumns();
+
     const db = getDb();
+    // Debug: log value count and key fields to help diagnose insert errors
+    console.log("Questionnaire insert - values count:", insertValues.length);
+    console.log(
+      "Questionnaire insert - academic_year, average_screen_time:",
+      insertValues[3],
+      insertValues[4],
+    );
     const insertedData = await db.query(insertQuery, insertValues);
 
     return NextResponse.json(
@@ -127,8 +146,11 @@ export async function POST(request: NextRequest) {
     );
   } catch (error) {
     console.error("API error:", error);
+    const message =
+      error instanceof Error ? error.message : JSON.stringify(error);
+    const stack = error instanceof Error && error.stack ? error.stack : null;
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: message || "Internal server error", stack },
       { status: 500 },
     );
   }
