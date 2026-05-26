@@ -1026,6 +1026,12 @@ export default function AdminDashboard() {
                         Faculty
                       </th>
                       <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                        Academic Year
+                      </th>
+                      <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                        Average Screen Time
+                      </th>
+                      <th className="px-4 py-3 text-left font-semibold text-gray-700">
                         Devices
                       </th>
                       <th className="px-4 py-3 text-left font-semibold text-gray-700">
@@ -1074,22 +1080,13 @@ export default function AdminDashboard() {
                         submission.created_at,
                       ).toLocaleString();
                       const symptomsFrequencyScore =
-                        submission.symptoms_frequency === "Rare"
-                          ? 0
-                          : submission.symptoms_frequency === "Infrequent"
-                            ? 1
-                            : submission.symptoms_frequency === "Frequent"
-                              ? 3
-                              : 0;
+                        calculateSymptomsFrequencyScore(
+                          submission.symptoms_frequency ?? "",
+                        );
                       const screenTimeAssociationScore =
-                        submission.associated_with_screen_use === "Never"
-                          ? 0
-                          : submission.associated_with_screen_use ===
-                              "Sometimes"
-                            ? 1
-                            : submission.associated_with_screen_use === "Always"
-                              ? 3
-                              : 0;
+                        calculateScreenTimeAssociationScore(
+                          submission.associated_with_screen_use ?? "",
+                        );
 
                       return (
                         <tr
@@ -1107,6 +1104,12 @@ export default function AdminDashboard() {
                           </td>
                           <td className="px-4 py-4 text-gray-700">
                             {submission.faculty_of_study}
+                          </td>
+                          <td className="px-4 py-4 text-gray-700">
+                            {displayValue(submission.academic_year)}
+                          </td>
+                          <td className="px-4 py-4 text-gray-700">
+                            {displayValue(submission.average_screen_time)}
                           </td>
                           <td className="px-4 py-4 text-gray-700">
                             <div className="mt-1">

@@ -18,6 +18,8 @@ export async function POST(request: NextRequest) {
         age,
         gender,
         faculty_of_study,
+        academic_year,
+        average_screen_time,
         digital_devices,
         digital_devices_other,
         consecutive_hours,
@@ -61,7 +63,7 @@ export async function POST(request: NextRequest) {
         $11, $12, $13, $14, $15, $16, $17, $18, $19, $20,
         $21, $22, $23, $24, $25, $26, $27, $28, $29, $30,
         $31, $32, $33, $34, $35, $36, $37, $38, $39, $40,
-        $41
+        $41, $42
       )
       returning *
     `;
@@ -70,6 +72,8 @@ export async function POST(request: NextRequest) {
       data.age,
       data.gender,
       data.faculty_of_study,
+      data.academic_year || null,
+      data.average_screen_time || null,
       data.digital_devices || [],
       data.digital_devices_other || null,
       data.consecutive_hours || null,
