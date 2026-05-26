@@ -172,7 +172,7 @@ export default function Home() {
         "eye_drops_usage",
         "eye_conditions_answers",
       ],
-      symptoms: ["symptoms_frequency", "associated_with_screen_use"],
+      symptoms: ["associated_with_screen_use"],
       e: ["productivity_impact", "consulted_eye_care", "changed_study_habits"],
     };
     // include academic year as required for section A
@@ -550,7 +550,7 @@ export default function Home() {
                 handleFieldChange("visual_symptoms", symptoms)
               }
               onScoreChange={() => {}}
-              showValidationErrors={validationErrors.symptoms}
+              showValidationErrors={false}
             />
 
             <CVSSymptomsSection
@@ -564,7 +564,7 @@ export default function Home() {
                 handleFieldChange("ocular_surface_symptoms", symptoms)
               }
               onScoreChange={() => {}}
-              showValidationErrors={validationErrors.symptoms}
+              showValidationErrors={false}
             />
 
             <CVSSymptomsSection
@@ -578,7 +578,7 @@ export default function Home() {
                 handleFieldChange("extra_ocular_symptoms", symptoms)
               }
               onScoreChange={() => {}}
-              showValidationErrors={validationErrors.symptoms}
+              showValidationErrors={false}
             />
 
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-6">
@@ -652,9 +652,17 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 space-y-6">
+            <div
+              className={`bg-white rounded-lg shadow-sm border p-6 space-y-6 ${
+                validationErrors.symptoms ? "border-red-200" : "border-gray-200"
+              }`}
+            >
               <div className="border-b pb-4">
-                <h3 className="text-lg font-semibold text-gray-900">
+                <h3
+                  className={`text-lg font-semibold ${
+                    validationErrors.symptoms ? "text-red-700" : "text-gray-900"
+                  }`}
+                >
                   22.5 Screen Time Association{" "}
                   <span className="text-red-500">*</span>
                 </h3>

@@ -50,7 +50,7 @@ export function CVSSymptomsSection({
         <p
           className={`font-semibold ${showValidationErrors && selectedSymptoms.length === 0 ? "text-red-700" : "text-gray-800"}`}
         >
-          Did you experience any of the following symptoms in the past 4 weeks?
+          Did you experience any of the following symptoms in the past 4 weeks?(Skip if you don't have any symptoms)
         </p>
       </div>
 
